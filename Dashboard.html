@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Canacot ERP — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0d0b09;
+      --paper:     #faf8f5;
+      --warm:      #f5f0e8;
+      --navy:      #1a3a5c;
+      --navy-lt:   #2b5a8a;
+      --navy-dim:  rgba(26,58,92,0.08);
+      --gold:      #b8975a;
+      --gold-lt:   #d4b478;
+      --dust:      #9a8878;
+      --border:    rgba(26,58,92,0.1);
+      --border-gold: rgba(184,151,90,0.25);
+      --green:     #2d7a5f;
+      --green-bg:  rgba(45,122,95,0.08);
+      --red:       #9b3535;
+      --red-bg:    rgba(155,53,53,0.08);
+      --amber:     #a06c1a;
+      --amber-bg:  rgba(160,108,26,0.08);
+      --sidebar-w: 240px;
+      --header-h:  56px;
+      --sans:      'Inter', system-ui, sans-serif;
+      --radius:    4px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--warm);
+      color: var(--ink);
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── NOISE ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ══════════════════════════════
+       SIDEBAR
+    ══════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 28px; height: 28px;
+      background: var(--gold);
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-icon svg { width: 14px; height: 14px; }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #fff;
+    }
+    .brand-tag {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      margin-left: auto;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+
+    .nav-section-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      padding: 16px 20px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      border-left: 2px solid transparent;
+      position: relative;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.85);
+    }
+    .nav-item.active {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      border-left-color: var(--gold);
+      font-weight: 500;
+    }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .nav-item.active svg { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    .avatar-info { flex: 1; min-width: 0; }
+    .avatar-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .avatar-role {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 1px;
+    }
+    .avatar-more {
+      color: rgba(255,255,255,0.25);
+      cursor: pointer;
+    }
+    .avatar-more:hover { color: rgba(255,255,255,0.6); }
+
+    /* ══════════════════════════════
+       MAIN LAYOUT
+    ══════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      height: var(--header-h);
+      background: rgba(250,248,245,0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+
+    .topbar-breadcrumb {
+      font-size: 12px;
+      color: var(--dust);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .topbar-breadcrumb span { color: var(--dust); opacity: 0.5; }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      width: 220px;
+    }
+    .topbar-search svg { width: 13px; height: 13px; color: var(--dust); flex-shrink: 0; }
+    .topbar-search input {
+      border: none;
+      background: transparent;
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink);
+      outline: none;
+      width: 100%;
+    }
+    .topbar-search input::placeholder { color: var(--dust); }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--paper);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .icon-btn:hover { background: var(--warm); border-color: var(--navy); }
+    .icon-btn svg { width: 14px; height: 14px; color: var(--dust); }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      border: 1px solid var(--paper);
+    }
+
+    .date-chip {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--dust);
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px 10px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── CONTENT SCROLL ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .page-header-left {}
+    .page-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .page-sub {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--dust);
+      margin-top: 4px;
+    }
+    .page-actions { display: flex; gap: 8px; }
+
+    .btn-primary {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      background: var(--navy);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--navy-lt); transform: translateY(-1px); }
+    .btn-primary svg { width: 12px; height: 12px; }
+
+    .btn-secondary {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 15px;
+      background: transparent;
+      color: var(--navy);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-secondary:hover { background: var(--navy-dim); border-color: var(--navy); }
+    .btn-secondary svg { width: 12px; height: 12px; }
+
+    /* ══════════════════════════════
+       KPI CARDS ROW
+    ══════════════════════════════ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kpi-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { border-color: var(--navy); transform: translateY(-2px); }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--navy);
+    }
+    .kpi-card.gold::before { background: var(--gold); }
+    .kpi-card.green::before { background: var(--green); }
+    .kpi-card.amber::before { background: var(--amber); }
+
+    .kpi-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dust);
+    }
+    .kpi-icon {
+      width: 30px; height: 30px;
+      border-radius: var(--radius);
+      background: var(--navy-dim);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .kpi-icon svg { width: 14px; height: 14px; color: var(--navy); }
+    .kpi-card.gold .kpi-icon { background: rgba(184,151,90,0.1); }
+    .kpi-card.gold .kpi-icon svg { color: var(--gold); }
+    .kpi-card.green .kpi-icon { background: var(--green-bg); }
+    .kpi-card.green .kpi-icon svg { color: var(--green); }
+    .kpi-card.amber .kpi-icon { background: var(--amber-bg); }
+    .kpi-card.amber .kpi-icon svg { color: var(--amber); }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .kpi-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kpi-change {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .kpi-change.up { color: var(--green); }
+    .kpi-change.down { color: var(--red); }
+    .kpi-change svg { width: 10px; height: 10px; }
+    .kpi-period {
+      font-size: 11px;
+      color: var(--dust);
+    }
+
+    /* Sparkline */
+    .kpi-sparkline {
+      position: absolute;
+      bottom: 0; right: 0;
+      opacity: 0.08;
+    }
+
+    /* ══════════════════════════════
+       MIDDLE ROW
+    ══════════════════════════════ */
+    .mid-row {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+    }
+
+    /* ── CHART CARD ── */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--dust);
+      margin-top: 1px;
+    }
+    .card-actions { display: flex; gap: 4px; }
+
+    .tab-group {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .tab {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 10px;
+      color: var(--dust);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      font-family: var(--sans);
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab:not(:last-child) { border-right: 1px solid var(--border); }
+    .tab.active { background: var(--navy); color: #fff; }
+    .tab:hover:not(.active) { background: var(--warm); color: var(--ink); }
+
+    .card-body { padding: 20px; }
+
+    /* SVG Bar Chart */
+    .chart-area {
+      width: 100%;
+      height: 200px;
+      position: relative;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--dust);
+    }
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 2px;
+    }
+
+    /* ── ACTIVITY FEED ── */
+    .activity-list {
+      padding: 0;
+    }
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: var(--warm); }
+
+    .activity-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .activity-dot svg { width: 12px; height: 12px; }
+    .activity-dot.blue { background: var(--navy-dim); color: var(--navy); }
+    .activity-dot.blue svg { color: var(--navy); }
+    .activity-dot.green { background: var(--green-bg); }
+    .activity-dot.green svg { color: var(--green); }
+    .activity-dot.gold { background: rgba(184,151,90,0.1); }
+    .activity-dot.gold svg { color: var(--gold); }
+    .activity-dot.red { background: var(--red-bg); }
+    .activity-dot.red svg { color: var(--red); }
+
+    .activity-content { flex: 1; }
+    .activity-text {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .activity-text strong { font-weight: 600; }
+    .activity-time {
+      font-size: 10px;
+      color: var(--dust);
+      margin-top: 2px;
+    }
+
+    /* ══════════════════════════════
+       BOTTOM ROW
+    ══════════════════════════════ */
+    .bot-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 300px;
+      gap: 16px;
+    }
+
+    /* ── TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .data-table th {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dust);
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--warm);
+    }
+    .data-table td {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--ink);
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--warm); }
+
+    .td-name { font-weight: 500; }
+    .td-mono {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--navy);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .status-pill::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+    .status-pill.paid { background: var(--green-bg); color: var(--green); }
+    .status-pill.paid::before { background: var(--green); }
+    .status-pill.pending { background: var(--amber-bg); color: var(--amber); }
+    .status-pill.pending::before { background: var(--amber); }
+    .status-pill.overdue { background: var(--red-bg); color: var(--red); }
+    .status-pill.overdue::before { background: var(--red); }
+
+    /* ── QUICK STATS SIDEBAR ── */
+    .quick-stat {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s;
+    }
+    .quick-stat:last-child { border-bottom: none; }
+    .quick-stat:hover { background: var(--warm); }
+    .qs-left {}
+    .qs-label {
+      font-size: 11px;
+      color: var(--dust);
+      margin-bottom: 2px;
+    }
+    .qs-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .qs-bar-wrap {
+      width: 80px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .qs-bar {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--navy);
+    }
+    .qs-bar.gold { background: var(--gold); }
+    .qs-bar.green { background: var(--green); }
+    .qs-pct {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* ══════════════════════════════
+       SCROLLBAR
+    ══════════════════════════════ */
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+
+    /* ── GOLD RULE ── */
+    .gold-rule {
+      width: 24px; height: 2px;
+      background: var(--gold);
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SIDEBAR
+══════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="5" height="5" rx="1" fill="white"/>
+        <rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
+        <rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
+        <rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity="0.3"/>
+      </svg>
+    </div>
+    <span class="brand-name">Canacot</span>
+    <span class="brand-tag">ERP</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item active" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 3h2v2H9v-2zm0-3h2v2H9V9zm3 0h2v2h-2V9zm0 3h2v2h-2v-2z"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 100 10A5 5 0 008 1zm0 9A4 4 0 118 3a4 4 0 010 7zM7 5h1v3H7V5zm0 4h1v1H7V9z"/><path d="M1 13h14v2H1z"/></svg>
+      Analytics
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 3a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V3zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V9zm1 5a1 1 0 000 2h8a1 1 0 000-2H2z"/></svg>
+      Finance
+      <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm5 5a5 5 0 10-10 0h10z"/></svg>
+      Human Resources
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zM9 2.5A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zM1 10.5A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zM9 10.5A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z"/></svg>
+      Inventory
+      <span class="nav-badge">12</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm5 1H2v2h3V5zm4 0H7v2h2V5zm4 0h-2v2h2V5zm-8 4H2v2h3V9zm4 0H7v2h2V9zm4 0h-2v2h2V9z"/></svg>
+      CRM & Sales
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 10-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
+      Procurement
+    </a>
+
+    <div class="nav-section-label">Settings</div>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 4.754a3.246 3.246 0 100 6.492 3.246 3.246 0 000-6.492zM5.754 8a2.246 2.246 0 114.492 0 2.246 2.246 0 01-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 01-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 01-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 01.52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 011.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 011.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 01.52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 01-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 01-1.255-.52l-.094-.319z"/></svg>
+      Settings
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A1.5 1.5 0 012.5 1h11A1.5 1.5 0 0115 2.5v6.086a1.5 1.5 0 01-.44 1.06l-5.65 5.65a1.5 1.5 0 01-2.12 0l-5.65-5.65A1.5 1.5 0 011 8.586V2.5zM2.5 2a.5.5 0 00-.5.5v6.086a.5.5 0 00.146.354l5.65 5.649a.5.5 0 00.708 0l5.65-5.65a.5.5 0 00.146-.353V2.5a.5.5 0 00-.5-.5h-11z"/><circle cx="5.5" cy="5.5" r="1.5"/></svg>
+      Audit Logs
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar">AC</div>
+    <div class="avatar-info">
+      <div class="avatar-name">Admin User</div>
+      <div class="avatar-role">Super Admin</div>
+    </div>
+    <div class="avatar-more">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M3 9.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════
+     MAIN
+══════════════════════════════ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-breadcrumb">
+      <span>Canacot ERP</span>
+      <span>›</span>
+      <span style="color:var(--ink); font-weight:500;">Dashboard</span>
+    </div>
+
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 10-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85a1.007 1.007 0 00-.115-.099zM12 6.5a5.5 5.5 0 11-11 0 5.5 5.5 0 0111 0z"/></svg>
+        <input type="text" placeholder="Search anything…"/>
+      </div>
+      <div class="icon-btn">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 16a2 2 0 001.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 008 16zm.25-14.75A5.25 5.25 0 002.75 6.5c0 1.39.385 2.642 1.017 3.697C4.688 11.5 5.5 12.5 5.5 13h5c0-.5.812-1.5 1.733-2.803A5.165 5.165 0 0013.25 6.5 5.25 5.25 0 008.25 1.25z"/></svg>
+        <span class="notif-dot"></span>
+      </div>
+      <div class="icon-btn">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h4l2 2 2-2h4a1 1 0 001-1V2a1 1 0 00-1-1z"/></svg>
+      </div>
+      <div class="date-chip">Fri, Aug 07, 2026</div>
+    </div>
+  </header>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="gold-rule"></div>
+        <div class="page-eyebrow">Overview</div>
+        <div class="page-title">Business Dashboard</div>
+        <div class="page-sub">Last updated 4 minutes ago &nbsp;·&nbsp; FY 2026–27 Q1</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn-secondary">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 014.5 0h7A2.5 2.5 0 0114 2.5v13l-6-4-6 4V2.5z"/></svg>
+          Save View
+        </button>
+        <button class="btn-primary">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 01.5.5v2.5a1 1 0 001 1h12a1 1 0 001-1v-2.5a.5.5 0 011 0v2.5a2 2 0 01-2 2H2a2 2 0 01-2-2v-2.5a.5.5 0 01.5-.5z"/><path d="M7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V1.5a.5.5 0 00-1 0v8.793L5.354 8.146a.5.5 0 10-.708.708l3 3z"/></svg>
+          Export Report
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 3a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V3zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V9zm1 5a1 1 0 100 2h8a1 1 0 100-2H2z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">₹48.2L</div>
+        <div class="kpi-footer">
+          <span class="kpi-change up">
+            <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 1l4 8H1l4-8z"/></svg>
+            +12.4%
+          </span>
+          <span class="kpi-period">vs last quarter</span>
+        </div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40">
+          <polyline points="0,35 15,28 30,20 45,25 60,12 80,5" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="kpi-card gold">
+        <div class="kpi-top">
+          <div class="kpi-label">Outstanding</div>
+          <div class="kpi-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm5 1H2v2h3V5zm4 0H7v2h2V5zm4 0h-2v2h2V5zm-8 4H2v2h3V9zm4 0H7v2h2V9zm4 0h-2v2h2V9z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">₹6.7L</div>
+        <div class="kpi-footer">
+          <span class="kpi-change down">
+            <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 9L1 1h8L5 9z"/></svg>
+            +2.1%
+          </span>
+          <span class="kpi-period">14 invoices</span>
+        </div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40">
+          <polyline points="0,10 15,18 30,12 45,22 60,25 80,30" fill="none" stroke="#b8975a" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="kpi-card green">
+        <div class="kpi-top">
+          <div class="kpi-label">Active Employees</div>
+          <div class="kpi-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm5 5a5 5 0 10-10 0h10z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">247</div>
+        <div class="kpi-footer">
+          <span class="kpi-change up">
+            <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 1l4 8H1l4-8z"/></svg>
+            +8
+          </span>
+          <span class="kpi-period">this month</span>
+        </div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40">
+          <polyline points="0,30 15,28 30,24 45,20 60,18 80,14" fill="none" stroke="#2d7a5f" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="kpi-card amber">
+        <div class="kpi-top">
+          <div class="kpi-label">Low Stock Items</div>
+          <div class="kpi-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.982 1.566a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 01-1.1 0L7.1 5.995A.905.905 0 018 5zm.002 6a1 1 0 110 2 1 1 0 010-2z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">23</div>
+        <div class="kpi-footer">
+          <span class="kpi-change down">
+            <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 9L1 1h8L5 9z"/></svg>
+            +5
+          </span>
+          <span class="kpi-period">needs reorder</span>
+        </div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40">
+          <polyline points="0,20 15,18 30,22 45,28 60,30 80,35" fill="none" stroke="#a06c1a" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- MID ROW: Chart + Activity -->
+    <div class="mid-row">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Revenue vs Expenses</div>
+            <div class="card-subtitle">Monthly comparison — FY 2026–27</div>
+          </div>
+          <div class="card-actions">
+            <div class="tab-group">
+              <button class="tab active">Monthly</button>
+              <button class="tab">Quarterly</button>
+              <button class="tab">Annual</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <svg class="chart-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
+              <!-- Grid lines -->
+              <line x1="0" y1="0"   x2="600" y2="0"   stroke="#e8e2d8" stroke-width="0.5"/>
+              <line x1="0" y1="45"  x2="600" y2="45"  stroke="#e8e2d8" stroke-width="0.5"/>
+              <line x1="0" y1="90"  x2="600" y2="90"  stroke="#e8e2d8" stroke-width="0.5"/>
+              <line x1="0" y1="135" x2="600" y2="135" stroke="#e8e2d8" stroke-width="0.5"/>
+              <line x1="0" y1="180" x2="600" y2="180" stroke="#e8e2d8" stroke-width="0.5"/>
+
+              <!-- Revenue area -->
+              <defs>
+                <linearGradient id="rev-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1a3a5c" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="exp-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#b8975a" stop-opacity="0.12"/>
+                  <stop offset="100%" stop-color="#b8975a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Revenue fill -->
+              <path d="M0,130 L75,110 L150,95 L225,115 L300,80 L375,65 L450,50 L525,40 L600,30 L600,180 L0,180 Z"
+                    fill="url(#rev-grad)"/>
+              <!-- Revenue line -->
+              <polyline points="0,130 75,110 150,95 225,115 300,80 375,65 450,50 525,40 600,30"
+                        fill="none" stroke="#1a3a5c" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+              <!-- Expense fill -->
+              <path d="M0,150 L75,140 L150,145 L225,138 L300,132 L375,125 L450,120 L525,115 L600,108 L600,180 L0,180 Z"
+                    fill="url(#exp-grad)"/>
+              <!-- Expense line -->
+              <polyline points="0,150 75,140 150,145 225,138 300,132 375,125 450,120 525,115 600,108"
+                        fill="none" stroke="#b8975a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4,3"/>
+
+              <!-- Data dots — Revenue -->
+              <circle cx="0"   cy="130" r="3" fill="#1a3a5c"/>
+              <circle cx="75"  cy="110" r="3" fill="#1a3a5c"/>
+              <circle cx="150" cy="95"  r="3" fill="#1a3a5c"/>
+              <circle cx="225" cy="115" r="3" fill="#1a3a5c"/>
+              <circle cx="300" cy="80"  r="3" fill="#1a3a5c"/>
+              <circle cx="375" cy="65"  r="3" fill="#1a3a5c"/>
+              <circle cx="450" cy="50"  r="3" fill="#1a3a5c"/>
+              <circle cx="525" cy="40"  r="3" fill="#1a3a5c"/>
+              <circle cx="600" cy="30"  r="4" fill="#1a3a5c" stroke="white" stroke-width="1.5"/>
+
+              <!-- Month labels -->
+              <text x="0"   y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Apr</text>
+              <text x="70"  y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">May</text>
+              <text x="144" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Jun</text>
+              <text x="219" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Jul</text>
+              <text x="294" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Aug</text>
+              <text x="369" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Sep</text>
+              <text x="444" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Oct</text>
+              <text x="519" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Nov</text>
+              <text x="588" y="178" font-family="Inter,sans-serif" font-size="8" fill="#9a8878">Dec</text>
+            </svg>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--navy);"></div>
+              Revenue
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--gold);"></div>
+              Expenses
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Activity</div>
+            <div class="card-subtitle">Live system events</div>
+          </div>
+          <button class="btn-secondary" style="font-size:11px; padding:4px 10px;">View all</button>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot green">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text"><strong>Invoice #INV-2847</strong> marked as paid — ₹1,24,000</div>
+              <div class="activity-time">2 min ago · Finance</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot blue">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm2-3a2 2 0 11-4 0 2 2 0 014 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text"><strong>Rohan Mehta</strong> onboarded — joined Engineering team</div>
+              <div class="activity-time">14 min ago · HR</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot gold">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.982 1.566a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 01-1.1 0L7.1 5.995A.905.905 0 018 5zm.002 6a1 1 0 110 2 1 1 0 010-2z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text"><strong>SKU-0042</strong> fell below reorder level — 8 units left</div>
+              <div class="activity-time">38 min ago · Inventory</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot blue">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm5 1H2v2h3V5zm4 0H7v2h2V5zm4 0h-2v2h2V5z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text"><strong>Acme Corp</strong> deal moved to Negotiation stage</div>
+              <div class="activity-time">1 hr ago · CRM</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot red">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 118 1a7 7 0 010 14zm0 1A8 8 0 108 0a8 8 0 000 16zm3.354-9.646a.5.5 0 00-.708-.708L8 8.293 5.354 5.646a.5.5 0 10-.708.708L7.293 9l-2.647 2.646a.5.5 0 00.708.708L8 9.707l2.646 2.647a.5.5 0 00.708-.708L8.707 9l2.647-2.646z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text"><strong>PO-5521</strong> approval rejected — budget exceeded</div>
+              <div class="activity-time">2 hrs ago · Procurement</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot green">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z"/></svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-text">August payroll of <strong>₹38.4L</strong> processed successfully</div>
+              <div class="activity-time">3 hrs ago · Payroll</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bot-row">
+
+      <!-- Recent Invoices -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Invoices</div>
+            <div class="card-subtitle">Last 7 days</div>
+          </div>
+          <button class="btn-secondary" style="font-size:11px; padding:4px 10px;">All Invoices</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Client</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-mono">#INV-2851</td>
+                <td class="td-name">Reliance Ltd.</td>
+                <td>₹2,40,000</td>
+                <td>Aug 10, 2026</td>
+                <td><span class="status-pill pending">Pending</span></td>
+              </tr>
+              <tr>
+                <td class="td-mono">#INV-2850</td>
+                <td class="td-name">Tata Comm.</td>
+                <td>₹85,500</td>
+                <td>Aug 08, 2026</td>
+                <td><span class="status-pill overdue">Overdue</span></td>
+              </tr>
+              <tr>
+                <td class="td-mono">#INV-2847</td>
+                <td class="td-name">Infosys BPM</td>
+                <td>₹1,24,000</td>
+                <td>Aug 05, 2026</td>
+                <td><span class="status-pill paid">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="td-mono">#INV-2844</td>
+                <td class="td-name">HDFC Bank</td>
+                <td>₹3,10,000</td>
+                <td>Aug 03, 2026</td>
+                <td><span class="status-pill paid">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="td-mono">#INV-2840</td>
+                <td class="td-name">Wipro Tech</td>
+                <td>₹67,200</td>
+                <td>Aug 01, 2026</td>
+                <td><span class="status-pill paid">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top Departments -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Department Spend</div>
+            <div class="card-subtitle">Budget utilisation — Q1</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Budget</th>
+                <th>Spent</th>
+                <th>Utilised</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-name">Engineering</td>
+                <td>₹20L</td>
+                <td>₹16.4L</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                      <div style="width:82%;height:100%;background:var(--navy);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:600;color:var(--navy);">82%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-name">Sales</td>
+                <td>₹12L</td>
+                <td>₹7.8L</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                      <div style="width:65%;height:100%;background:var(--green);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:600;color:var(--green);">65%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-name">Operations</td>
+                <td>₹15L</td>
+                <td>₹14.2L</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                      <div style="width:95%;height:100%;background:var(--amber);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:600;color:var(--amber);">95%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-name">HR & Admin</td>
+                <td>₹8L</td>
+                <td>₹4.1L</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                      <div style="width:51%;height:100%;background:var(--navy);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:600;color:var(--navy);">51%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-name">Marketing</td>
+                <td>₹6L</td>
+                <td>₹5.5L</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                      <div style="width:92%;height:100%;background:var(--red);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:600;color:var(--red);">92%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Quick Metrics</div>
+            <div class="card-subtitle">At a glance</div>
+          </div>
+        </div>
+        <div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Open POs</div>
+              <div class="qs-value">34</div>
+              <div class="qs-bar-wrap"><div class="qs-bar" style="width:68%"></div></div>
+            </div>
+            <span class="qs-pct">68%</span>
+          </div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Collection Rate</div>
+              <div class="qs-value">91.2%</div>
+              <div class="qs-bar-wrap"><div class="qs-bar green" style="width:91%"></div></div>
+            </div>
+            <span class="qs-pct" style="color:var(--green)">91%</span>
+          </div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Open Support Tickets</div>
+              <div class="qs-value">7</div>
+              <div class="qs-bar-wrap"><div class="qs-bar gold" style="width:35%"></div></div>
+            </div>
+            <span class="qs-pct" style="color:var(--gold)">35%</span>
+          </div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Payroll Accuracy</div>
+              <div class="qs-value">99.8%</div>
+              <div class="qs-bar-wrap"><div class="qs-bar green" style="width:99%"></div></div>
+            </div>
+            <span class="qs-pct" style="color:var(--green)">99%</span>
+          </div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Active CRM Deals</div>
+              <div class="qs-value">18</div>
+              <div class="qs-bar-wrap"><div class="qs-bar" style="width:58%"></div></div>
+            </div>
+            <span class="qs-pct">58%</span>
+          </div>
+          <div class="quick-stat">
+            <div class="qs-left">
+              <div class="qs-label">Stock Fill Rate</div>
+              <div class="qs-value">87.4%</div>
+              <div class="qs-bar-wrap"><div class="qs-bar" style="width:87%"></div></div>
+            </div>
+            <span class="qs-pct">87%</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /bot-row -->
+  </div><!-- /content -->
+</main>
+
+<script>
+  /* Tab switcher */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.closest('.tab-group').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  /* Nav item switcher */
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
