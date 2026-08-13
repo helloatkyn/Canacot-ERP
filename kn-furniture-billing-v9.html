@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>K.N Furniture — Billing</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ===== KILL BLUE RIPPLE + TAP HIGHLIGHT ===== */
+*{
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  tap-highlight-color:transparent;
+}
+input,textarea,select,button{
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+}
+
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#F2F2F7;
+  --border:#E0E0E5;
+  --text:#1D1D1F;
+  --text2:#3A3A3C;
+  --muted:#6E6E73;
+  --muted2:#AEAEB2;
+  --accent:#1D1D1F;
+  --danger:#FF3B30;
+  --danger-lt:#FFF1F0;
+  --success:#34C759;
+  --header-h:52px;
+  --sh3:0 24px 64px rgba(0,0,0,0.18),0 4px 16px rgba(0,0,0,0.08);
+}
+
+html,body{
+  height:100%;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* GPU-accelerated layers for heavy elements */
+.header{will-change:background,box-shadow;transform:translateZ(0);}
+.hero-banner{will-change:transform;transform:translateZ(0);}
+.modal-overlay{will-change:opacity;}
+.modal{will-change:transform,opacity;transform:translateZ(0);}
+.cat-strip-wrap{will-change:scroll-position;-webkit-overflow-scrolling:touch;}
+.toast{will-change:transform;}
+.actions-bar{will-change:transform;transform:translateZ(0);}
+
+/* Smooth scroll on containers */
+.page{-webkit-overflow-scrolling:touch;}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+  font-size:15px;
+  background:#F2F2F7;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(200,210,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(255,220,190,0.12) 0%, transparent 50%);
+  color:var(--text);
+  line-height:1.5;
+}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ===== HEADER — glassmorphism ===== */
+.header{
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.45);
+  box-shadow:0 1px 0 rgba(0,0,0,0.06);
+  height:var(--header-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  position:sticky;top:0;z-index:200;
+  gap:14px;
+}
+.header.scrolled{
+  background:rgba(255,255,255,0.88);
+  box-shadow:0 1px 0 rgba(0,0,0,0.08),0 4px 20px rgba(0,0,0,0.05);
+}
+
+.header-brand{display:flex;align-items:center;flex-shrink:0;}
+
+.brand-name{
+  font-size:17px;font-weight:600;color:var(--text);
+  letter-spacing:-0.5px;line-height:1;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+
+/* Segmented pill nav */
+.header-nav{
+  display:flex;align-items:center;
+  background:rgba(120,120,128,0.12);
+  border-radius:10px;
+  padding:3px;
+  gap:1px;
+  flex-shrink:0;
+}
+
+.nav-btn{
+  background:none;border:none;border-radius:7px;
+  padding:5px 13px;
+  font-size:13px;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all 0.15s;white-space:nowrap;
+  font-family:inherit;letter-spacing:-0.1px;
+  display:flex;align-items:center;gap:5px;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-btn i,.nav-btn svg{width:14px;height:14px;flex-shrink:0;display:block;}
+.nav-btn:hover{background:rgba(255,255,255,0.7);color:var(--text);}
+.nav-btn.active{
+  background:#FFFFFF;color:var(--text);font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);
+}
+
+/* ===== HERO BANNER ===== */
+.hero-banner{
+  width:100%;overflow:hidden;position:relative;
+  display:block;background:#000;
+}
+.hero-inner{
+  position:relative;width:100%;overflow:hidden;
+  display:flex;align-items:flex-end;
+}
+.hero-img{
+  width:100%;height:260px;object-fit:cover;object-position:center 55%;
+  display:block;filter:brightness(0.78) contrast(1.06);
+  transition:transform 0.8s ease;
+}
+.hero-text{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:24px 20px 20px;
+  background:linear-gradient(to top,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.15) 60%,transparent 100%);
+}
+.hero-eyebrow{
+  font-size:9.5px;color:rgba(255,255,255,0.65);letter-spacing:2px;
+  text-transform:uppercase;font-weight:700;margin-bottom:5px;
+}
+.hero-title{
+  font-size:26px;font-weight:700;color:#FFFFFF;letter-spacing:-0.8px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+  line-height:1.05;
+}
+.hero-sub{font-size:12.5px;color:rgba(255,255,255,0.75);margin-top:5px;font-weight:400;letter-spacing:-0.1px;}
+
+/* ===== CATEGORY SCROLL STRIP ===== */
+.cat-strip-wrap{
+  background:#FFFFFF;
+  padding:16px 0 16px 16px;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  border-bottom:1px solid var(--border);
+}
+.cat-strip-wrap::-webkit-scrollbar{display:none;}
+.cat-strip{
+  display:flex;gap:10px;
+  width:max-content;padding-right:16px;
+}
+.cat-card{
+  flex-shrink:0;
+  width:130px;
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  background:#F5F5F7;
+  box-shadow:0 1px 6px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.05);
+  cursor:pointer;
+}
+.cat-card img{
+  width:100%;height:96px;object-fit:cover;
+  display:block;
+  filter:brightness(0.88) saturate(0.85);
+  transition:transform 0.35s ease,filter 0.35s ease;
+}
+.cat-card:active img{transform:scale(0.97);filter:brightness(0.75);}
+.cat-label{
+  padding:8px 10px 9px;
+  font-size:11.5px;font-weight:600;color:var(--text);
+  letter-spacing:-0.1px;background:#FFFFFF;
+}
+.cat-label-sub{font-size:10px;color:var(--muted);font-weight:400;margin-top:1px;}
+
+/* ===== PAGES ===== */
+.page{display:none;flex:1;}
+.page.active{display:block;}
+
+/* ===== BILLING PAGE ===== */
+.billing-page{max-width:780px;margin:0 auto;padding:20px 16px 140px;}
+
+/* ===== BILL META ===== */
+.bill-meta{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:18px;gap:12px;flex-wrap:wrap;
+}
+.bill-meta-left{display:flex;flex-direction:column;gap:3px;}
+.bill-eyebrow{
+  font-size:10px;color:var(--muted2);text-transform:uppercase;
+  letter-spacing:1.2px;font-weight:700;
+}
+.bill-number{
+  font-size:26px;font-weight:700;color:var(--text);
+  letter-spacing:-0.8px;line-height:1.05;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+.bill-datetime{font-size:12px;color:var(--muted);margin-top:2px;}
+.bill-badge{
+  background:#F5F5F7;color:var(--muted);
+  border:1.5px solid var(--border);
+  border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.2px;
+  padding:5px 13px;align-self:center;
+}
+
+/* ===== SECTION CARDS — glassmorphism ===== */
+.section-card{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);
+  border-radius:20px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.section-header{
+  padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.06);
+  font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:0.9px;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(245,245,247,0.5);
+}
+.section-header svg{width:11px;height:11px;color:var(--muted2);}
+.section-body{padding:18px;}
+
+/* ===== CUSTOMER GRID ===== */
+.customer-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.customer-grid .full{grid-column:1/-1;}
+
+/* Floating label input wrapper */
+.field-group{position:relative;}
+.field-label{
+  position:absolute;top:50%;left:14px;transform:translateY(-50%);
+  font-size:14px;color:#A0A0A8;font-weight:400;
+  pointer-events:none;
+  transition:top 0.18s cubic-bezier(0.4,0,0.2,1),
+             font-size 0.18s cubic-bezier(0.4,0,0.2,1),
+             color 0.18s;
+  transform-origin:left center;
+  z-index:1;
+}
+/* When input has value or is focused */
+.field-group.active .field-label,
+.field-group:focus-within .field-label{
+  top:9px;transform:translateY(0) scale(0.78);
+  font-size:14px;color:#6E6E73;font-weight:600;
+  letter-spacing:0.3px;
+}
+
+.field-input{
+  width:100%;
+  border:1.5px solid rgba(0,0,0,0.1);
+  border-radius:14px;
+  padding:22px 14px 8px;
+  font-size:15px;color:var(--text);
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  outline:none;
+  transition:border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  font-family:inherit;-webkit-appearance:none;
+  line-height:1.3;
+}
+.field-input:focus{
+  border-color:rgba(0,0,0,0.35);
+  background:rgba(255,255,255,0.92);
+  box-shadow:0 0 0 3.5px rgba(0,0,0,0.06);
+}
+.field-input::placeholder{color:transparent;}
+
+/* Non-floating label fallback for textarea */
+.field-label-plain{
+  font-size:11px;color:var(--muted);font-weight:600;
+  margin-bottom:6px;letter-spacing:0.3px;text-transform:uppercase;display:block;
+}
+.field-input.plain{
+  padding:11px 14px;
+}
+.field-input.plain::placeholder{color:#B8B8C0;}
+
+/* ===== BILLING TABLE WRAP ===== */
+.table-section{margin-bottom:14px;}
+.bill-table-wrap{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+/* ===== ITEMS HEADER ===== */
+.items-header{
+  padding:11px 16px;border-bottom:1px solid rgba(0,0,0,0.06);
+  font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:0.9px;text-transform:uppercase;
+  background:rgba(245,245,247,0.5);
+  display:flex;align-items:center;justify-content:space-between;
+}
+
+/* ===== ITEM ROW CARD ===== */
+.item-row{
+  padding:14px 16px;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  position:relative;
+}
+.item-row:last-child{border-bottom:none;}
+.item-row-top{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+}
+.item-sr{
+  font-size:11px;font-weight:700;color:var(--muted2);
+  min-width:18px;flex-shrink:0;
+}
+.item-name-wrap{flex:1;position:relative;}
+.item-input{
+  width:100%;border:none;outline:none;
+  font-size:15px;font-weight:500;color:var(--text);
+  background:transparent;font-family:inherit;
+  padding:0;
+}
+.item-input::placeholder{color:#C0C0C8;font-weight:400;}
+.item-del{
+  background:none;border:none;cursor:pointer;
+  padding:4px;color:var(--muted2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;transition:all 0.1s;
+}
+.item-del svg{width:14px;height:14px;}
+.item-del:hover{background:var(--danger-lt);color:var(--danger);}
+
+.item-row-bottom{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  padding-left:26px;
+}
+.item-field{display:flex;flex-direction:column;gap:3px;}
+.item-field-label{
+  font-size:9.5px;font-weight:700;color:var(--muted2);
+  letter-spacing:0.6px;text-transform:uppercase;
+}
+.item-field-input{
+  border:none;border-bottom:1.5px solid #E0E0E5;
+  outline:none;background:transparent;
+  font-size:14px;font-weight:500;color:var(--text);
+  font-family:inherit;padding:3px 0 4px;width:100%;
+  transition:border-color 0.12s;
+}
+.item-field-input:focus{border-color:#1D1D1F;}
+.item-field-input::placeholder{color:#C8C8CC;}
+.item-total-val{
+  font-size:14px;font-weight:700;color:var(--text);
+  padding:3px 0 4px;border-bottom:1.5px solid transparent;
+}
+
+.add-row-btn{
+  width:100%;padding:13px;background:none;border:none;
+  border-top:1px solid #EBEBEF;color:var(--muted);
+  font-size:13px;font-weight:500;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background 0.1s,color 0.1s;font-family:inherit;
+  letter-spacing:-0.1px;
+}
+.add-row-btn svg{width:13px;height:13px;}
+.add-row-btn:hover{background:#F5F5F7;color:var(--text);}
+
+/* ===== AUTOCOMPLETE ===== */
+.autocomplete-dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;min-width:290px;
+  background:#FFFFFF;border:1.5px solid #1D1D1F;border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.05);
+  z-index:300;overflow:hidden;max-height:220px;overflow-y:auto;
+}
+.autocomplete-item{
+  padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid #F0F0F3;transition:background 0.1s;
+}
+.autocomplete-item:last-child{border-bottom:none;}
+.autocomplete-item:hover,.autocomplete-item.highlighted{background:#F5F5F7;}
+.ac-code{
+  font-size:10px;font-weight:700;color:var(--text2);
+  background:#F0F0F0;border:1px solid rgba(0,0,0,0.1);border-radius:5px;
+  padding:2px 7px;min-width:22px;text-align:center;letter-spacing:0.3px;flex-shrink:0;
+}
+.ac-name{font-size:13.5px;font-weight:500;color:var(--text);flex:1;}
+.ac-price{font-size:12px;color:var(--muted);font-weight:600;}
+
+/* ===== TOTALS ===== */
+.totals-section{display:flex;justify-content:flex-end;margin-bottom:14px;}
+.totals-card{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);
+  border-radius:20px;
+  padding:18px 22px;min-width:248px;
+}
+.total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;font-size:13.5px;color:var(--muted);
+}
+.total-row .tl{font-weight:500;}
+.total-row .tv{font-weight:500;color:var(--text2);}
+.total-row.grand{
+  padding-top:12px;margin-top:10px;border-top:1.5px solid #E0E0E5;
+  font-size:16px;font-weight:700;color:var(--text);
+}
+.total-row.grand .tl,.total-row.grand .tv{color:var(--text);}
+
+/* ===== NOTES ===== */
+.notes-input{resize:vertical;min-height:52px;font-family:inherit;line-height:1.5;}
+
+/* ===== STICKY BOTTOM ACTION BAR ===== */
+.actions-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:150;
+  display:flex;gap:0;
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:saturate(180%) blur(24px);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);
+  border-top:1px solid rgba(0,0,0,0.09);
+  box-shadow:0 -4px 24px rgba(0,0,0,0.07);
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  gap:10px;
+}
+.action-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:12px;padding:13px 10px;
+  font-size:14px;font-weight:600;cursor:pointer;border:none;
+  font-family:inherit;letter-spacing:-0.2px;
+  transition:opacity 0.12s, transform 0.1s;
+  white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
+.action-btn i,.action-btn svg{width:16px;height:16px;flex-shrink:0;display:block;}
+.action-btn:active{opacity:0.7;transform:scale(0.97);}
+
+.action-btn-ghost{
+  background:rgba(0,0,0,0.05);color:var(--muted);
+}
+.action-btn-ghost:hover{background:rgba(0,0,0,0.09);}
+
+.action-btn-outline{
+  background:rgba(0,0,0,0.0);color:var(--text2);
+  border:1.5px solid rgba(0,0,0,0.15)!important;
+}
+.action-btn-outline:hover{background:rgba(0,0,0,0.04);}
+
+.action-btn-primary{
+  background:#1D1D1F;color:#FFFFFF;
+  flex:1.6;
+}
+.action-btn-primary:hover{background:#3A3A3C;}
+
+/* ===== MODAL INPUTS (plain, no floating label) ===== */
+.modal-field{display:flex;flex-direction:column;gap:6px;}
+.modal-field-label{
+  font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.modal-field-input{
+  width:100%;border:1.5px solid #D8D8DC;border-radius:12px;
+  padding:12px 14px;font-size:15px;color:var(--text);
+  background:#FAFAFA;outline:none;font-family:inherit;
+  -webkit-appearance:none;transition:border-color 0.12s,background 0.12s;
+}
+.modal-field-input:focus{border-color:#1D1D1F;background:#FFFFFF;}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;border-radius:10px;
+  padding:10px 18px;font-size:13.5px;font-weight:500;cursor:pointer;border:1.5px solid;
+  transition:all 0.12s;white-space:nowrap;font-family:inherit;letter-spacing:-0.1px;
+}
+.btn svg{width:14px;height:14px;flex-shrink:0;}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:#1D1D1F;border-color:#1D1D1F;color:white;}
+.btn-primary:hover{background:#3A3A3C;border-color:#3A3A3C;}
+.btn-outline{background:#FFFFFF;border-color:#C8C8CC;color:var(--text2);}
+.btn-outline:hover{background:#F5F5F7;border-color:#1D1D1F;}
+.btn-ghost{background:none;border-color:transparent;color:var(--muted);}
+.btn-ghost:hover{background:#F5F5F7;color:var(--text);border-color:var(--border);}
+.btn-danger{background:none;border-color:transparent;color:var(--muted);}
+.btn-danger:hover{background:var(--danger-lt);border-color:var(--danger);color:var(--danger);}
+
+/* ===== PRODUCTS / BILLS PAGE ===== */
+.products-page,.bills-page{max-width:760px;margin:0 auto;padding:24px 16px 110px;}
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.page-title{
+  font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.6px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+.page-subtitle{font-size:13px;color:var(--muted);margin-top:3px;}
+
+/* ===== PRODUCTS LIST ===== */
+.products-list{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
+  border-radius:20px;overflow:hidden;
+}
+.product-row{
+  display:flex;align-items:center;
+  padding:14px 16px;border-bottom:1px solid #EBEBEF;gap:12px;transition:background 0.1s;
+}
+.product-row:last-child{border-bottom:none;}
+.product-row:hover{background:rgba(0,0,0,0.01);}
+.product-row.header-row{
+  background:#FAFAFA;font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:0.8px;text-transform:uppercase;border-bottom:1.5px solid #E0E0E5;
+  padding:9px 16px;
+}
+.product-row.header-row:hover{background:#FAFAFA;}
+.prod-code{
+  font-size:11px;font-weight:700;color:var(--text2);
+  background:#F0F0F2;border:1px solid rgba(0,0,0,0.08);border-radius:7px;
+  padding:4px 8px;text-align:center;display:inline-block;
+  min-width:32px;flex-shrink:0;
+}
+.prod-name{font-size:14px;font-weight:500;color:var(--text);flex:1;min-width:0;}
+.prod-price{font-size:13px;color:var(--text2);font-weight:700;white-space:nowrap;margin-right:4px;}
+.prod-actions{display:flex;gap:2px;flex-shrink:0;}
+
+.icon-btn-sm{
+  background:none;border:1.5px solid transparent;cursor:pointer;
+  padding:5px;border-radius:8px;color:var(--muted2);
+  transition:all 0.1s;display:flex;align-items:center;justify-content:center;
+}
+.icon-btn-sm svg{width:14px;height:14px;}
+.icon-btn-sm.edit:hover{background:#F5F5F7;color:var(--text);border-color:#E0E0E5;}
+.icon-btn-sm.del:hover{background:var(--danger-lt);color:var(--danger);border-color:#FFCDD2;}
+
+/* ===== BILLS LIST ===== */
+.bills-list{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
+  border-radius:20px;overflow:hidden;
+}
+.bill-row{
+  display:flex;align-items:center;
+  padding:14px 16px;border-bottom:1px solid #EBEBEF;gap:10px;transition:background 0.1s;
+  cursor:pointer;
+}
+.bill-row:last-child{border-bottom:none;}
+.bill-row:hover{background:rgba(0,0,0,0.01);}
+.bill-row.header-row{
+  background:#FAFAFA;font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:0.8px;text-transform:uppercase;border-bottom:1.5px solid #E0E0E5;
+  padding:9px 16px;cursor:default;
+}
+.bill-row.header-row:hover{background:#FAFAFA;}
+.bill-no{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;min-width:76px;}
+.bill-cust{font-size:14px;font-weight:500;color:var(--text);flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bill-date{font-size:11.5px;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+.bill-total{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;
+  flex-shrink:0;min-width:72px;text-align:right;}
+.bill-acts{display:flex;gap:2px;flex-shrink:0;margin-left:4px;}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{padding:56px 24px;text-align:center;color:var(--muted);font-size:13.5px;}
+.empty-state .es-icon{margin-bottom:14px;opacity:0.2;}
+.empty-state .es-icon svg{width:32px;height:32px;color:var(--muted);}
+.empty-state .es-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:5px;}
+.empty-state .es-sub{font-size:12.5px;color:var(--muted2);}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  z-index:500;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:#FFFFFF;border-radius:18px;width:100%;max-width:400px;
+  box-shadow:var(--sh3);animation:minIn 0.2s cubic-bezier(0.32,0.72,0,1);
+  border:1px solid rgba(0,0,0,0.06);
+}
+@keyframes minIn{from{opacity:0;transform:scale(0.94) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{
+  padding:20px 22px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{
+  font-size:16px;font-weight:700;letter-spacing:-0.3px;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+.modal-close{
+  background:rgba(120,120,128,0.12);border:none;cursor:pointer;
+  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  transition:all 0.12s;color:var(--muted);
+}
+.modal-close svg{width:11px;height:11px;}
+.modal-close:hover{background:rgba(120,120,128,0.22);color:var(--text);}
+.modal-body{padding:22px;display:flex;flex-direction:column;gap:16px;}
+.modal-footer{
+  padding:14px 22px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px;
+  background:rgba(250,250,250,0.8);border-radius:0 0 18px 18px;
+}
+
+/* ===== CUSTOM CONFIRM MODAL ===== */
+.confirm-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:900;align-items:flex-end;justify-content:center;
+  padding:0 0 calc(24px + env(safe-area-inset-bottom));
+}
+.confirm-overlay.open{display:flex;}
+.confirm-sheet{
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:22px;
+  width:calc(100% - 32px);max-width:420px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.18),0 4px 16px rgba(0,0,0,0.08);
+  overflow:hidden;
+  animation:sheetUp 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+@keyframes sheetUp{
+  from{opacity:0;transform:translateY(40px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.confirm-body{
+  padding:24px 24px 20px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.confirm-title{
+  font-size:16px;font-weight:700;color:var(--text);
+  letter-spacing:-0.3px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+.confirm-msg{font-size:14px;color:var(--muted);line-height:1.5;}
+.confirm-actions{
+  display:flex;border-top:1px solid rgba(0,0,0,0.07);
+}
+.confirm-btn{
+  flex:1;padding:16px 12px;
+  font-size:15px;font-weight:500;cursor:pointer;
+  background:none;border:none;font-family:inherit;
+  transition:background 0.1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.confirm-btn:active{background:rgba(0,0,0,0.05);}
+.confirm-btn.cancel{
+  color:var(--muted);
+  border-right:1px solid rgba(0,0,0,0.07);
+}
+.confirm-btn.cancel:active{background:rgba(0,0,0,0.04);}
+.confirm-btn.ok{
+  color:#FF3B30;font-weight:700;
+}
+.confirm-btn.ok.safe{color:#1D1D1F;}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:rgba(28,28,30,0.90);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  color:white;padding:11px 20px;border-radius:22px;
+  font-size:13px;font-weight:500;z-index:1000;
+  transition:transform 0.24s cubic-bezier(0.34,1.4,0.64,1);
+  white-space:nowrap;pointer-events:none;letter-spacing:-0.1px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ===== MOBILE ===== */
+@media(max-width:640px){
+  .header{padding:0 16px;height:50px;gap:8px;}
+  .brand-name{font-size:15px;font-weight:700;}
+  .header-nav{padding:3px;gap:1px;}
+  .nav-btn{padding:6px 10px;font-size:0;gap:0;}
+  .nav-btn i,.nav-btn svg{width:17px;height:17px;}
+  .billing-page,.products-page,.bills-page{padding:16px 12px 120px;}
+  .customer-grid{grid-template-columns:1fr;}
+  .customer-grid .full{grid-column:1;}
+  .bill-meta{gap:10px;}
+  .bill-number{font-size:24px;}
+  .totals-card{min-width:auto;width:100%;}
+  .totals-section{justify-content:stretch;}
+  .action-btn{font-size:13px;padding:12px 6px;}
+  .product-row{grid-template-columns:40px 1fr 84px 64px;gap:8px;padding:11px 14px;}
+  .bill-row{grid-template-columns:82px 1fr 80px 60px;gap:8px;padding:11px 14px;}
+  .bill-row .bill-date{display:none;}
+}
+
+/* ===== MOBILE HERO ===== */
+@media(max-width:640px){
+  .hero-img{height:220px;}
+  .hero-title{font-size:22px;}
+  .hero-text{padding:16px 16px 18px;}
+  .cat-card{width:115px;}
+  .cat-card img{height:84px;}
+}
+
+/* ===== BOTTOM FEATURED IMAGE ===== */
+.bottom-feature{
+  margin:28px 0 0;
+  border-radius:16px;overflow:hidden;position:relative;
+  display:block;
+}
+.bottom-feature img{
+  width:100%;height:160px;object-fit:cover;object-position:center 40%;
+  display:block;filter:brightness(0.72);
+}
+.bottom-feature-text{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:20px;
+}
+.bottom-feature-title{
+  font-size:17px;font-weight:700;color:#FFFFFF;letter-spacing:-0.4px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+.bottom-feature-sub{font-size:11.5px;color:rgba(255,255,255,0.75);margin-top:4px;}
+
+/* ===== PRINT ===== */
+@media print{
+  body{background:white;font-size:12px;color:#000;}
+  .app{display:block;}
+  .header{display:none!important;}
+  .hero-banner{display:none!important;}
+  .nav-btn,.actions-bar,.action-btn,.add-row-btn,.del-btn,.del-cell,.autocomplete-dropdown{display:none!important;}
+  .page{display:block!important;}
+  .products-page,.bills-page{display:none!important;}
+  .billing-page{max-width:100%;padding:0;margin:0;}
+  .section-card,.bill-table-wrap,.totals-card{border:1px solid #ddd;box-shadow:none;border-radius:4px;}
+  .print-header{display:block!important;}
+  .table-input{border:none;background:none;padding:4px 0;font-size:12px;}
+  .bill-table thead th,.bill-table td{padding:6px 8px;}
+  .totals-section{page-break-inside:avoid;justify-content:flex-end;}
+  .del-cell{display:none!important;}
+  .bill-table td.sr{display:table-cell!important;}
+  .bill-meta{margin-bottom:12px;}
+  .bill-number{font-size:18px;}
+  .totals-card{min-width:220px;padding:12px 16px;}
+  .section-card{margin-bottom:10px;}
+  .table-section{margin-bottom:10px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header class="header" id="main-header">
+  <div class="header-brand">
+    <div class="brand-name">K.N Furniture</div>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn active" data-page="billing" onclick="showPage('billing')">
+      <i data-lucide="file-plus-2"></i>
+      <span>New Bill</span>
+    </button>
+    <button class="nav-btn" data-page="bills" onclick="showPage('bills')">
+      <i data-lucide="receipt-text"></i>
+      <span>Bills</span>
+    </button>
+    <button class="nav-btn" data-page="products" onclick="showPage('products')">
+      <i data-lucide="package-2"></i>
+      <span>Products</span>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO BANNER — only on billing page, hidden on others -->
+<div class="hero-banner" id="hero-section">
+  <div class="hero-inner">
+    <img class="hero-img" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=85&auto=format&fit=crop" alt="Premium Furniture" loading="lazy">
+    <div class="hero-text">
+      <div class="hero-eyebrow">K.N Furniture</div>
+      <div class="hero-title">Crafted for Every Space.</div>
+      <div class="hero-sub">Premium furniture. Professional billing.</div>
+    </div>
+  </div>
+
+  <!-- Horizontal scroll category cards -->
+  <div class="cat-strip-wrap">
+    <div class="cat-strip">
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=75&auto=format&fit=crop&crop=center" alt="Sofas" loading="lazy">
+        <div class="cat-label">Sofas<div class="cat-label-sub">Living room</div></div>
+      </div>
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&q=75&auto=format&fit=crop&crop=center" alt="Chairs" loading="lazy">
+        <div class="cat-label">Chairs<div class="cat-label-sub">Seating</div></div>
+      </div>
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1549187774-b4e9b0445b41?w=300&q=75&auto=format&fit=crop&crop=center" alt="Tables" loading="lazy">
+        <div class="cat-label">Tables<div class="cat-label-sub">Dining & coffee</div></div>
+      </div>
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=75&auto=format&fit=crop&crop=center" alt="Beds" loading="lazy">
+        <div class="cat-label">Beds<div class="cat-label-sub">Bedroom</div></div>
+      </div>
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300&q=75&auto=format&fit=crop&crop=center" alt="Storage" loading="lazy">
+        <div class="cat-label">Storage<div class="cat-label-sub">Wardrobes & more</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BILLING PAGE -->
+<div class="page active billing-page" id="page-billing">
+
+  <!-- Print Header -->
+  <div class="print-header" style="margin-bottom:18px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#000;">K.N Furniture</div>
+    <div style="font-size:10px;color:#999;margin-top:3px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Rough Estimate</div>
+    <hr style="margin:12px 0;border:none;border-top:1px solid #ddd;">
+  </div>
+
+  <!-- Bill Meta -->
+  <div class="bill-meta">
+    <div class="bill-meta-left">
+      <div class="bill-eyebrow">Invoice</div>
+      <div class="bill-number" id="bill-number-display">INV-0001</div>
+      <div class="bill-datetime" id="bill-datetime">—</div>
+    </div>
+    <div class="bill-badge">Rough Estimate</div>
+  </div>
+
+  <!-- Customer Details -->
+  <div class="section-card">
+    <div class="section-header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Customer Details
+    </div>
+    <div class="section-body">
+      <div class="customer-grid">
+        <div>
+          <div class="field-group" id="fg-name">
+            <label class="field-label" for="cust-name">Party / Customer Name</label>
+            <input type="text" class="field-input" id="cust-name" placeholder="Enter name" autocomplete="off" oninput="syncFG(this)" onchange="syncFG(this)">
+          </div>
+        </div>
+        <div>
+          <div class="field-group" id="fg-mobile">
+            <label class="field-label" for="cust-mobile">Mobile Number</label>
+            <input type="tel" class="field-input" id="cust-mobile" placeholder="9876543210" autocomplete="off" oninput="syncFG(this)" onchange="syncFG(this)">
+          </div>
+        </div>
+        <div class="full">
+          <div class="field-group" id="fg-address">
+            <label class="field-label" for="cust-address">Address</label>
+            <input type="text" class="field-input" id="cust-address" placeholder="Optional address" autocomplete="off" oninput="syncFG(this)" onchange="syncFG(this)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing Items -->
+  <div class="table-section">
+    <div class="bill-table-wrap">
+      <div class="items-header">
+        <span>Items</span>
+      </div>
+      <div id="bill-tbody"></div>
+      <button class="add-row-btn" onclick="addRow()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals-section">
+    <div class="totals-card">
+      <div class="total-row">
+        <span class="tl">Items</span>
+        <span class="tv" id="items-count">0</span>
+      </div>
+      <div class="total-row">
+        <span class="tl">Subtotal</span>
+        <span class="tv" id="subtotal-display">₹0</span>
+      </div>
+      <div class="total-row grand">
+        <span class="tl">Grand Total</span>
+        <span class="tv" id="grand-total-display">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section-card">
+    <div class="section-header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Notes / Remarks
+    </div>
+    <div class="section-body">
+      <textarea class="field-input plain notes-input" id="bill-notes" placeholder="Optional notes or remarks…"></textarea>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <button class="action-btn action-btn-ghost" onclick="confirmNewBill()">
+      <i data-lucide="rotate-ccw"></i>
+      New
+    </button>
+    <button class="action-btn action-btn-outline" onclick="printBill()">
+      <i data-lucide="printer"></i>
+      Print
+    </button>
+    <button class="action-btn action-btn-primary" onclick="saveBill()">
+      <i data-lucide="check"></i>
+      Save Bill
+    </button>
+  </div>
+
+  <!-- Bottom Feature Image -->
+  <div class="bottom-feature">
+    <img src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=900&q=80&auto=format&fit=crop" alt="Furniture workshop" loading="lazy">
+    <div class="bottom-feature-text">
+      <div class="bottom-feature-title">Built to last a lifetime.</div>
+      <div class="bottom-feature-sub">Solid wood · Expert craftsmanship · K.N Furniture</div>
+    </div>
+  </div>
+
+</div><!-- /billing -->
+
+<!-- PRODUCTS PAGE -->
+<div class="page products-page" id="page-products">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Products</h2>
+      <div class="page-subtitle">Manage your furniture catalogue</div>
+    </div>
+    <button class="btn btn-primary" onclick="openAddProduct()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Product
+    </button>
+  </div>
+  <div class="products-list" id="products-list">
+    <div class="product-row header-row">
+      <div>Code</div><div>Name</div><div style="text-align:right">Price</div><div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BILLS PAGE -->
+<div class="page bills-page" id="page-bills">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Saved Bills</h2>
+      <div class="page-subtitle">View, edit and print past estimates</div>
+    </div>
+  </div>
+  <div class="bills-list" id="bills-list">
+    <div class="bill-row header-row">
+      <div>Bill No.</div><div>Customer</div><div>Date</div>
+      <div style="text-align:right">Total</div><div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="product-modal-title">Add Product</div>
+      <button class="modal-close" onclick="closeProductModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-product-idx" value="">
+      <div class="modal-field">
+        <label class="modal-field-label" for="prod-code-input">Product Code</label>
+        <input type="text" class="modal-field-input" id="prod-code-input" placeholder="e.g. 1, A1, BED" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-field-label" for="prod-name-input">Product Name</label>
+        <input type="text" class="modal-field-input" id="prod-name-input" placeholder="e.g. Gadda" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-field-label" for="prod-price-input">Default Price (₹)</label>
+        <input type="number" class="modal-field-input" id="prod-price-input" placeholder="0" min="0">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeProductModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW BILL MODAL -->
+<div class="modal-overlay" id="view-bill-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title" id="view-bill-title">Bill Details</div>
+      <button class="modal-close" onclick="closeViewBillModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="view-bill-body" style="max-height:68vh;overflow-y:auto;gap:0;padding:0;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeViewBillModal()">Close</button>
+      <button class="btn btn-outline" onclick="loadBillForEdit()">Edit</button>
+      <button class="btn btn-primary" onclick="printViewedBill()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-sheet">
+    <div class="confirm-body">
+      <div class="confirm-title" id="confirm-title">Are you sure?</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+    </div>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" id="confirm-cancel">Cancel</button>
+      <button class="confirm-btn ok" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA STORE =====
+const DEFAULT_PRODUCTS=[
+  {code:'1',name:'Gadda',price:2500},
+  {code:'2',name:'Bedsheet',price:800},
+  {code:'3',name:'Pillow',price:350},
+  {code:'4',name:'Sofa',price:25000},
+  {code:'5',name:'Chair',price:1200},
+  {code:'6',name:'Table',price:5000},
+  {code:'7',name:'Double Bed',price:18000},
+  {code:'8',name:'Mattress',price:6000},
+];
+
+function getProducts(){try{const p=localStorage.getItem('bq_products');return p?JSON.parse(p):DEFAULT_PRODUCTS;}catch{return DEFAULT_PRODUCTS;}}
+function saveProducts(prods){localStorage.setItem('bq_products',JSON.stringify(prods));}
+function getSavedBills(){try{const b=localStorage.getItem('bq_bills');return b?JSON.parse(b):[];}catch{return[];}}
+function saveBills(bills){localStorage.setItem('bq_bills',JSON.stringify(bills));}
+function getBillCounter(){return parseInt(localStorage.getItem('bq_bill_counter')||'0',10);}
+function setBillCounter(n){localStorage.setItem('bq_bill_counter',n.toString());}
+function nextBillNumber(){const n=getBillCounter()+1;setBillCounter(n);return'INV-'+String(n).padStart(4,'0');}
+function peekNextBillNumber(){const n=getBillCounter()+1;return'INV-'+String(n).padStart(4,'0');}
+
+// ===== STATE =====
+let currentBillNumber=peekNextBillNumber();
+let currentBillId=null;
+let rowCount=0;
+let activeAC=null;
+let acHighlight=-1;
+let viewingBillIdx=null;
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded',()=>{
+  // Render Lucide icons
+  if(window.lucide) lucide.createIcons();
+
+  updateBillDisplay();
+  addRow();addRow();addRow();
+  renderProducts();
+  renderBills();
+
+  // Header glass on scroll — passive for performance
+  const header=document.getElementById('main-header');
+  window.addEventListener('scroll',()=>{
+    header.classList.toggle('scrolled',window.scrollY>10);
+  },{passive:true});
+
+  // Passive touch listeners — no jank
+  document.addEventListener('touchstart',()=>{},{passive:true});
+  document.addEventListener('touchmove',()=>{},{passive:true});
+});
+
+// ===== CUSTOM CONFIRM =====
+function showConfirm(title, msg, okLabel, okDanger, onOk){
+  const overlay=document.getElementById('confirm-overlay');
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  const okBtn=document.getElementById('confirm-ok');
+  okBtn.textContent=okLabel||'Confirm';
+  okBtn.className='confirm-btn ok'+(okDanger?'':' safe');
+  overlay.classList.add('open');
+  // Clone to remove old listeners
+  const newOk=okBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOk,okBtn);
+  newOk.addEventListener('click',()=>{overlay.classList.remove('open');onOk();},{once:true});
+  document.getElementById('confirm-cancel').onclick=()=>overlay.classList.remove('open');
+}
+
+// ===== PAGE NAVIGATION =====
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelector(`[data-page="${name}"]`).classList.add('active');
+  // Show hero only on billing page
+  const hero=document.getElementById('hero-section');
+  if(hero)hero.style.display=(name==='billing')?'block':'none';
+  // No auto-scroll — stay at top silently
+  window.scrollTo({top:0,behavior:'instant'});
+  if(name==='products')renderProducts();
+  if(name==='bills')renderBills();
+}
+
+// ===== FLOATING LABEL SYNC =====
+function syncFG(input){
+  const fg=input.closest('.field-group');
+  if(!fg)return;
+  if(input.value.trim())fg.classList.add('active');
+  else fg.classList.remove('active');
+}
+function syncAllFG(){
+  document.querySelectorAll('.field-group input,.field-group textarea').forEach(syncFG);
+}
+
+// ===== BILL META =====
+function updateBillDisplay(){
+  document.getElementById('bill-number-display').textContent=currentBillNumber;
+  const now=new Date();
+  document.getElementById('bill-datetime').textContent=
+    now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+
+    ' · '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ===== BILLING ITEMS (card layout) =====
+function addRow(item='',qty='',price='',focus=true){
+  rowCount++;
+  const rid='row-'+rowCount;
+  const tbody=document.getElementById('bill-tbody');
+  const div=document.createElement('div');
+  div.className='item-row';
+  div.id=rid;
+  div.innerHTML=`
+    <div class="item-row-top">
+      <span class="item-sr">${tbody.children.length+1}</span>
+      <div class="item-name-wrap" style="position:relative;">
+        <input type="text" class="item-input"
+          data-rid="${rid}" placeholder="Type code or name…"
+          value="${escHtml(item)}" autocomplete="off"
+          oninput="onItemInput(this)"
+          onkeydown="onItemKeydown(event,this)"
+          onblur="onItemBlur(this)"
+        >
+      </div>
+      <button class="item-del" onclick="deleteRow('${rid}')" title="Remove">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="item-row-bottom">
+      <div class="item-field">
+        <div class="item-field-label">Qty</div>
+        <input type="number" class="item-field-input qty-input" placeholder="1" value="${qty}" min="0"
+          oninput="calcRow(this.closest('.item-row'))">
+      </div>
+      <div class="item-field">
+        <div class="item-field-label">Price ₹</div>
+        <input type="number" class="item-field-input price-input" placeholder="0" value="${price}" min="0"
+          oninput="calcRow(this.closest('.item-row'))">
+      </div>
+      <div class="item-field">
+        <div class="item-field-label">Total ₹</div>
+        <div class="item-total-val" id="total-${rid}">—</div>
+      </div>
+    </div>
+  `;
+  tbody.appendChild(div);
+  calcRow(div);
+  updateTotals();
+  if(focus){const inp=div.querySelector('.item-input');setTimeout(()=>inp&&inp.focus(),50);}
+  return div;
+}
+
+function deleteRow(rid){
+  const row=document.getElementById(rid);
+  if(row)row.remove();
+  renumberRows();updateTotals();
+}
+
+function renumberRows(){
+  document.querySelectorAll('#bill-tbody .item-row').forEach((div,i)=>{
+    const sr=div.querySelector('.item-sr');
+    if(sr)sr.textContent=i+1;
+  });
+}
+
+function calcRow(div){
+  const qty=parseFloat(div.querySelector('.qty-input').value)||0;
+  const price=parseFloat(div.querySelector('.price-input').value)||0;
+  const total=qty*price;
+  const rid=div.id;
+  const cell=document.getElementById('total-'+rid);
+  if(cell)cell.textContent=total>0?'₹'+formatNum(total):'—';
+  updateTotals();
+}
+
+function updateTotals(){
+  const rows=document.querySelectorAll('#bill-tbody .item-row');
+  let grand=0,count=0;
+  rows.forEach(div=>{
+    const qty=parseFloat(div.querySelector('.qty-input')?.value)||0;
+    const price=parseFloat(div.querySelector('.price-input')?.value)||0;
+    const t=qty*price;grand+=t;
+    if(qty>0||price>0)count++;
+  });
+  document.getElementById('subtotal-display').textContent='₹'+formatNum(grand);
+  document.getElementById('grand-total-display').textContent='₹'+formatNum(grand);
+  document.getElementById('items-count').textContent=count;
+}
+
+// ===== AUTOCOMPLETE =====
+function getMatchingProducts(query){
+  const prods=getProducts();
+  const q=query.trim().toLowerCase();
+  if(!q)return[];
+  return prods.filter(p=>p.code.toLowerCase().startsWith(q)||p.name.toLowerCase().includes(q)).slice(0,6);
+}
+
+function onItemInput(inp){
+  closeAllAC();
+  const q=inp.value.trim();
+  if(!q)return;
+  const matches=getMatchingProducts(q);
+  if(!matches.length)return;
+  showAC(inp,matches);
+}
+
+function showAC(inp,matches){
+  const drop=document.createElement('div');
+  drop.className='autocomplete-dropdown';
+  drop.id='ac-drop-'+inp.dataset.rid;
+  matches.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='autocomplete-item';
+    item.innerHTML=`<span class="ac-code">${escHtml(p.code)}</span><span class="ac-name">${escHtml(p.name)}</span><span class="ac-price">₹${formatNum(p.price)}</span>`;
+    item.addEventListener('mousedown',e=>{e.preventDefault();selectProduct(inp,p);});
+    drop.appendChild(item);
+  });
+  inp.closest('.item-name-wrap').appendChild(drop);
+  activeAC={inp,drop,matches};acHighlight=-1;
+}
+
+function closeAllAC(){
+  document.querySelectorAll('.autocomplete-dropdown').forEach(d=>d.remove());
+  activeAC=null;acHighlight=-1;
+}
+
+function onItemKeydown(e,inp){
+  if(!activeAC){
+    if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();moveFocus(inp,'qty');}
+    return;
+  }
+  const items=activeAC.drop.querySelectorAll('.autocomplete-item');
+  if(e.key==='ArrowDown'){e.preventDefault();acHighlight=Math.min(acHighlight+1,items.length-1);updateACHighlight(items);}
+  else if(e.key==='ArrowUp'){e.preventDefault();acHighlight=Math.max(acHighlight-1,-1);updateACHighlight(items);}
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    if(acHighlight>=0)selectProduct(inp,activeAC.matches[acHighlight]);
+    else if(activeAC.matches.length===1)selectProduct(inp,activeAC.matches[0]);
+    else moveFocus(inp,'qty');
+  }else if(e.key==='Escape')closeAllAC();
+}
+
+function updateACHighlight(items){items.forEach((el,i)=>el.classList.toggle('highlighted',i===acHighlight));}
+function onItemBlur(inp){setTimeout(closeAllAC,150);}
+
+function selectProduct(inp,prod){
+  inp.value=prod.name;closeAllAC();
+  const row=inp.closest('.item-row');
+  const priceInput=row.querySelector('.price-input');
+  const qtyInput=row.querySelector('.qty-input');
+  if(priceInput)priceInput.value=prod.price;
+  if(!qtyInput.value||qtyInput.value==='0')qtyInput.value=1;
+  calcRow(row);
+  setTimeout(()=>qtyInput&&qtyInput.focus(),50);
+}
+
+function moveFocus(inp,to){
+  const row=inp.closest('.item-row');
+  if(to==='qty'){const q=row.querySelector('.qty-input');if(q){q.focus();q.select();}}
+}
+
+// ===== SAVE BILL =====
+function saveBill(){
+  const items=getBillItems();
+  if(!items.length){showToast('Add at least one item');return;}
+  const bill=buildBillObj();
+  bill.billNumber=currentBillNumber;
+  bill.savedAt=new Date().toISOString();
+  const bills=getSavedBills();
+  if(currentBillId!==null){bills[currentBillId]=bill;showToast('Bill updated');}
+  else{bills.push(bill);setBillCounter(getBillCounter()+1);showToast('Bill saved');}
+  saveBills(bills);
+  currentBillId=null;
+  currentBillNumber=peekNextBillNumber();
+  updateBillDisplay();
+}
+
+function getBillItems(){
+  const rows=[];
+  document.querySelectorAll('#bill-tbody .item-row').forEach(div=>{
+    const item=div.querySelector('.item-input')?.value.trim();
+    const qty=parseFloat(div.querySelector('.qty-input')?.value)||0;
+    const price=parseFloat(div.querySelector('.price-input')?.value)||0;
+    if(item||qty||price)rows.push({item:item||'—',qty,price,total:qty*price});
+  });
+  return rows;
+}
+
+function buildBillObj(){
+  const items=getBillItems();
+  const grand=items.reduce((s,r)=>s+r.total,0);
+  return{
+    billNumber:currentBillNumber,
+    date:new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),
+    time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+    customer:{
+      name:document.getElementById('cust-name').value.trim()||'Customer',
+      mobile:document.getElementById('cust-mobile').value.trim(),
+      address:document.getElementById('cust-address').value.trim(),
+    },
+    items,grand,
+    notes:document.getElementById('bill-notes').value.trim(),
+  };
+}
+
+// ===== NEW BILL =====
+function confirmNewBill(){
+  showConfirm('New Bill','Unsaved changes will be lost. Start a new bill?','New Bill',false,newBill);
+}
+
+function newBill(){
+  document.getElementById('cust-name').value='';
+  document.getElementById('cust-mobile').value='';
+  document.getElementById('cust-address').value='';
+  document.getElementById('bill-notes').value='';
+  document.getElementById('bill-tbody').innerHTML='';
+  rowCount=0;currentBillId=null;
+  currentBillNumber=peekNextBillNumber();
+  updateBillDisplay();
+  addRow();addRow();addRow();
+  showPage('billing');
+}
+
+// ===== PRINT =====
+function printBill(){window.print();}
+
+// ===== PRODUCTS =====
+function renderProducts(){
+  const prods=getProducts();
+  const list=document.getElementById('products-list');
+  const header=list.querySelector('.header-row');
+  list.innerHTML='';list.appendChild(header);
+  if(!prods.length){
+    list.innerHTML+=`<div class="empty-state">
+      <div class="es-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v6"/></svg></div>
+      <div class="es-title">No products yet</div>
+      <div class="es-sub">Add your first product to start billing faster.</div>
+    </div>`;
+    return;
+  }
+  prods.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='product-row';
+    row.innerHTML=`
+      <div><span class="prod-code">${escHtml(p.code)}</span></div>
+      <div class="prod-name">${escHtml(p.name)}</div>
+      <div class="prod-price">₹${formatNum(p.price)}</div>
+      <div class="prod-actions">
+        <button class="icon-btn-sm edit" onclick="openEditProduct(${i})" title="Edit">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn-sm del" onclick="deleteProduct(${i})" title="Delete">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function openAddProduct(){
+  document.getElementById('product-modal-title').textContent='Add Product';
+  document.getElementById('edit-product-idx').value='';
+  document.getElementById('prod-code-input').value='';
+  document.getElementById('prod-name-input').value='';
+  document.getElementById('prod-price-input').value='';
+  document.getElementById('product-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('prod-code-input').focus(),100);
+}
+
+function openEditProduct(i){
+  const prods=getProducts();const p=prods[i];
+  document.getElementById('product-modal-title').textContent='Edit Product';
+  document.getElementById('edit-product-idx').value=i;
+  document.getElementById('prod-code-input').value=p.code;
+  document.getElementById('prod-name-input').value=p.name;
+  document.getElementById('prod-price-input').value=p.price;
+  document.getElementById('product-modal').classList.add('open');
+}
+
+function closeProductModal(){document.getElementById('product-modal').classList.remove('open');}
+
+function saveProduct(){
+  const code=document.getElementById('prod-code-input').value.trim();
+  const name=document.getElementById('prod-name-input').value.trim();
+  const price=parseFloat(document.getElementById('prod-price-input').value)||0;
+  if(!code||!name){showToast('Code and Name required');return;}
+  const prods=getProducts();
+  const idx=document.getElementById('edit-product-idx').value;
+  if(idx!==''){prods[parseInt(idx)]={code,name,price};showToast('Product updated');}
+  else{prods.push({code,name,price});showToast('Product added');}
+  saveProducts(prods);closeProductModal();renderProducts();
+}
+
+function deleteProduct(i){
+  showConfirm('Delete Product','This product will be permanently removed.','Delete',true,()=>{
+    const prods=getProducts();prods.splice(i,1);
+    saveProducts(prods);renderProducts();showToast('Product deleted');
+  });
+}
+
+// ===== SAVED BILLS =====
+function renderBills(){
+  const bills=getSavedBills();
+  const list=document.getElementById('bills-list');
+  const header=list.querySelector('.header-row');
+  list.innerHTML='';list.appendChild(header);
+  if(!bills.length){
+    list.innerHTML+=`<div class="empty-state">
+      <div class="es-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <div class="es-title">No saved bills yet</div>
+      <div class="es-sub">Bills you save will appear here.</div>
+    </div>`;
+    return;
+  }
+  bills.slice().reverse().forEach((b,ri)=>{
+    const i=bills.length-1-ri;
+    const row=document.createElement('div');
+    row.className='bill-row';
+    row.innerHTML=`
+      <div class="bill-no">${escHtml(b.billNumber)}</div>
+      <div class="bill-cust">${escHtml(b.customer.name)}</div>
+      <div class="bill-date">${escHtml(b.date)}</div>
+      <div class="bill-total">₹${formatNum(b.grand)}</div>
+      <div class="bill-acts">
+        <button class="icon-btn-sm" onclick="viewBill(${i})" title="View">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="icon-btn-sm del" onclick="deleteSavedBill(${i})" title="Delete">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function viewBill(i){
+  const bills=getSavedBills();const b=bills[i];
+  viewingBillIdx=i;
+  document.getElementById('view-bill-title').textContent=b.billNumber;
+  const body=document.getElementById('view-bill-body');
+  let html=`
+    <div style="padding:18px 22px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-size:10.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:5px;">Customer</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.3px;">${escHtml(b.customer.name)}</div>
+          ${b.customer.mobile?`<div style="font-size:12px;color:var(--muted);margin-top:3px;">${escHtml(b.customer.mobile)}</div>`:''}
+          ${b.customer.address?`<div style="font-size:12px;color:var(--muted);">${escHtml(b.customer.address)}</div>`:''}
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:10.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:5px;">Date</div>
+          <div style="font-size:12px;color:var(--muted);">${escHtml(b.date)}</div>
+          <div style="font-size:12px;color:var(--muted2);">${escHtml(b.time)}</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 22px;border-bottom:1px solid var(--border);">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border);">
+            <th style="padding:10px 4px;text-align:left;font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">#</th>
+            <th style="padding:10px 4px;text-align:left;font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Item</th>
+            <th style="padding:10px 4px;text-align:right;font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Qty</th>
+            <th style="padding:10px 4px;text-align:right;font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Price</th>
+            <th style="padding:10px 4px;text-align:right;font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Total</th>
+          </tr>
+        </thead>
+        <tbody>`;
+  b.items.forEach((item,j)=>{
+    html+=`<tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:9px 4px;color:var(--muted2);font-size:11px;">${j+1}</td>
+      <td style="padding:9px 4px;font-weight:500;">${escHtml(item.item)}</td>
+      <td style="padding:9px 4px;text-align:right;color:var(--muted);">${item.qty}</td>
+      <td style="padding:9px 4px;text-align:right;color:var(--muted);">₹${formatNum(item.price)}</td>
+      <td style="padding:9px 4px;text-align:right;font-weight:700;color:var(--text);">₹${formatNum(item.total)}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div>
+    <div style="padding:16px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
+      <span style="font-size:14px;font-weight:700;color:var(--text);">Grand Total</span>
+      <span style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.6px;">₹${formatNum(b.grand)}</span>
+    </div>`;
+  if(b.notes){html+=`<div style="padding:14px 22px;font-size:12px;color:var(--muted);line-height:1.5;"><span style="font-weight:600;color:var(--text2);">Notes: </span>${escHtml(b.notes)}</div>`;}
+  body.innerHTML=html;
+  document.getElementById('view-bill-modal').classList.add('open');
+}
+
+function closeViewBillModal(){
+  document.getElementById('view-bill-modal').classList.remove('open');
+  viewingBillIdx=null;
+}
+
+function loadBillForEdit(){
+  if(viewingBillIdx===null)return;
+  const bills=getSavedBills();const b=bills[viewingBillIdx];
+  closeViewBillModal();
+  document.getElementById('cust-name').value=b.customer.name||'';
+  document.getElementById('cust-mobile').value=b.customer.mobile||'';
+  document.getElementById('cust-address').value=b.customer.address||'';
+  document.getElementById('bill-notes').value=b.notes||'';
+  document.getElementById('bill-tbody').innerHTML='';rowCount=0;
+  b.items.forEach(item=>addRow(item.item,item.qty,item.price,false));
+  if(b.items.length<3){for(let i=b.items.length;i<3;i++)addRow('','','',false);}
+  currentBillNumber=b.billNumber;currentBillId=viewingBillIdx;
+  updateBillDisplay();
+  document.getElementById('bill-datetime').textContent=b.date+' · '+b.time;
+  syncAllFG();
+  showPage('billing');showToast('Bill loaded for editing');
+}
+
+function printViewedBill(){
+  if(viewingBillIdx===null)return;
+  loadBillForEdit();setTimeout(()=>window.print(),400);
+}
+
+function deleteSavedBill(i){
+  showConfirm('Delete Bill','This bill will be permanently removed.','Delete',true,()=>{
+    const bills=getSavedBills();bills.splice(i,1);
+    saveBills(bills);renderBills();showToast('Bill deleted');
+  });
+}
+
+// ===== UTILITIES =====
+function formatNum(n){
+  if(isNaN(n))return'0';
+  return Number(n).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
+}
+
+function escHtml(str){
+  if(!str)return'';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+document.getElementById('confirm-overlay').addEventListener('click',function(e){
+  if(e.target===this)this.classList.remove('open');
+});
+document.getElementById('product-modal').addEventListener('click',function(e){if(e.target===this)closeProductModal();});
+document.getElementById('view-bill-modal').addEventListener('click',function(e){if(e.target===this)closeViewBillModal();});
+
+['prod-code-input','prod-name-input','prod-price-input'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')saveProduct();});
+});
+
+currentBillNumber=peekNextBillNumber();
+updateBillDisplay();
+</script>
+</body>
+</html>
