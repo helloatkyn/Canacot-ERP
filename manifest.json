@@ -2,7 +2,7 @@
   "name": "K.N Furniture Billing",
   "short_name": "KN Billing",
   "description": "K.N Furniture — Professional billing app",
-  "start_url": "./kn-furniture-billing.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#F2F2F7",
