@@ -5,7 +5,7 @@ const CACHE = 'kn-billing-v1';
 // (Unsplash images are decorative, not critical for app function)
 const PRECACHE = [
   './',
-  './kn-furniture-billing.html',
+  './index.html',
   './manifest.json',
   './icon.png'
 ];
@@ -22,7 +22,7 @@ self.addEventListener('install', event => {
       // skipWaiting so new SW activates immediately
       return cache.addAll(PRECACHE).catch(() => {
         // If icon.png isn't present yet, cache what we can
-        return cache.addAll(['./', './kn-furniture-billing.html', './manifest.json']);
+        return cache.addAll(['./', './index.html', './manifest.json']);
       });
     }).then(() => self.skipWaiting())
   );
@@ -90,4 +90,4 @@ self.addEventListener('fetch', event => {
     return;
   }
 });
-        
+                                                   
