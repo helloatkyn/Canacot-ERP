@@ -1,0 +1,27 @@
+{
+  "name": "K.N Furniture Billing",
+  "short_name": "KN Billing",
+  "description": "K.N Furniture — Professional billing app",
+  "start_url": "./kn-furniture-billing.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F2F2F7",
+  "theme_color": "#1D1D1F",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance"],
+  "lang": "en-IN",
+  "scope": "./"
+}
