@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Billing App</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --blue: #0A66C2;
+  --blue-dark: #004182;
+  --blue-lt: #EBF3FB;
+  --text: #0A0A0A;
+  --text2: #3A3A3A;
+  --muted: #6B7280;
+  --border: #E2E8F0;
+  --bg: #F8FAFC;
+  --white: #FFFFFF;
+  --danger: #DC2626;
+  --danger-lt: #FEF2F2;
+  --success: #16A34A;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: calc(70px + var(--safe-bottom));
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font-family: inherit; font-size: 15px; font-weight: 500; color: var(--text); }
+input::placeholder, textarea::placeholder { color: #CBD5E1; }
+input:focus, textarea:focus { outline: none; border-color: var(--blue) !important; }
+
+/* Typography */
+.page-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.card-header-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.bill-number { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1.1; }
+.grand-total-value { font-size: 22px; font-weight: 800; color: var(--blue); }
+.flash-highlight { background-color: var(--blue-lt); transition: background-color 300ms ease; border-radius: 4px; padding: 2px 4px; }
+
+/* Layout */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.header-top { padding: 14px 20px; display: flex; flex-direction: column; }
+.app-title { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.app-subtitle { font-size: 12px; color: var(--muted); font-weight: 400; }
+.tab-nav { display: flex; padding: 0 20px; gap: 24px; }
+.tab-btn {
+  padding: 12px 0; font-size: 14px; font-weight: 500; color: var(--muted);
+  border-bottom: 2px solid transparent; transition: color 150ms ease, border-color 150ms ease;
+  position: relative;
+}
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+.tab-btn:hover:not(.active) { color: var(--text2); }
+
+.app-main { max-width: 800px; margin: 0 auto; padding: 20px; }
+.page { display: none; opacity: 0; transition: opacity 150ms ease; }
+.page.active { display: block; opacity: 1; }
+.page.fade-out { opacity: 0; transition: opacity 80ms ease; }
+
+/* Cards */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.card-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.card-body { padding: 16px; }
+
+/* Inputs */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+.input-std {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;
+  background: var(--white); transition: border-color 150ms ease;
+}
+.input-underline {
+  width: 100%; padding: 8px 4px; border: none; border-bottom: 1px solid var(--border);
+  background: transparent; border-radius: 0; transition: border-color 150ms ease;
+}
+.input-underline:focus { border-bottom-color: var(--blue); }
+textarea.input-std { min-height: 80px; resize: vertical; }
+
+/* Bill Meta */
+.bill-meta-bar {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+}
+.bill-meta-left { display: flex; flex-direction: column; gap: 4px; }
+.bill-meta-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+.bill-meta-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.badge-rough {
+  display: inline-flex; align-items: center; padding: 4px 10px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid var(--blue); color: var(--blue); background: var(--blue-lt); border-radius: 999px;
+}
+
+/* Customer Grid */
+.customer-grid { display: grid; gap: 12px; }
+@media (min-width: 480px) {
+  .customer-grid { grid-template-columns: 1fr 1fr; }
+  .customer-grid .field:last-child { grid-column: 1 / -1; }
+}
+
+/* Items Section */
+.items-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.item-count-badge { font-size: 12px; color: var(--muted); font-weight: 500; background: var(--bg); padding: 2px 8px; border-radius: 4px; }
+
+.item-row {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  animation: slideIn 200ms ease;
+}
+.item-row.deleting { animation: slideOut 180ms ease forwards; pointer-events: none; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideOut { to { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; border: none; } }
+
+.item-row-top { display: flex; justify-content: space-between; align-items: center; }
+.item-serial { font-size: 12px; font-weight: 700; color: var(--muted); }
+.btn-icon-delete {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; color: var(--muted); transition: color 150ms ease, background 150ms ease;
+}
+.btn-icon-delete:hover { color: var(--danger); background: var(--danger-lt); }
+
+.item-row-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center; }
+.item-total { text-align: right; font-weight: 600; color: var(--text); font-size: 14px; padding-right: 4px; }
+
+@media (min-width: 769px) {
+  .item-row {
+    display: grid; grid-template-columns: 30px 2fr 80px 100px 100px 36px; gap: 12px;
+    align-items: center; padding: 8px 0;
+  }
+  .item-row-top, .item-row-name, .item-row-bottom { display: contents; }
+  .item-serial { text-align: center; }
+  .btn-icon-delete { justify-self: center; }
+  .item-row-name input { grid-column: 2; }
+  .item-row-bottom input:nth-child(1) { grid-column: 3; text-align: right; }
+  .item-row-bottom input:nth-child(2) { grid-column: 4; text-align: right; }
+  .item-total { grid-column: 5; }
+}
+
+.btn-add-item {
+  width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px dashed var(--border); border-radius: 6px; color: var(--muted); font-weight: 500; font-size: 14px;
+  transition: all 150ms ease; margin-top: 8px;
+}
+.btn-add-item:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+.btn-add-item:active { transform: scale(0.97); transition: transform 80ms; }
+
+/* Autocomplete */
+.autocomplete-dropdown {
+  position: absolute; z-index: 200; background: var(--white);
+  border: 1.5px solid var(--blue); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  max-height: 240px; overflow-y: auto; width: 100%;
+  animation: fadeSlideDown 120ms ease;
+}
+@keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.ac-item {
+  height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  cursor: pointer; transition: background 100ms ease; border-bottom: 1px solid var(--border);
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.highlighted { background: var(--blue-lt); }
+.ac-code {
+  font-size: 10px; font-weight: 700; color: var(--blue); background: var(--blue-lt);
+  padding: 2px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.ac-name { flex: 1; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-price { font-size: 13px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+
+/* Totals */
+.totals-card { margin-top: 16px; }
+.total-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+.total-row.divider { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 12px; }
+.total-row.grand { font-size: 16px; }
+.total-label { color: var(--muted); }
+.total-value { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.total-value.grand-val { font-size: 22px; font-weight: 800; color: var(--blue); }
+
+/* Action Bar */
+.action-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 12px 20px; padding-bottom: calc(12px + var(--safe-bottom));
+  display: flex; gap: 10px; z-index: 90;
+  box-shadow: 0 -1px 3px rgba(0,0,0,0.04);
+}
+.btn {
+  height: 44px; border-radius: 6px; font-weight: 600; font-size: 13px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background 150ms ease, transform 80ms, color 150ms;
+}
+.btn:active { transform: scale(0.97); }
+.btn-outline { border: 1.5px solid var(--border); color: var(--text2); background: var(--white); flex: 1; }
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+.btn-primary { background: var(--blue); color: var(--white); flex: 1.6; }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-success-tint { background: var(--success); color: var(--white); }
+.btn-danger-text { color: var(--danger); font-weight: 600; }
+.btn-ghost { color: var(--muted); }
+.btn-ghost:hover { color: var(--text); background: var(--bg); }
+
+/* Saved Bills List */
+.bill-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 16px; margin-bottom: 10px; cursor: pointer;
+  transition: box-shadow 150ms ease, background 100ms ease;
+}
+.bill-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.06); background: #FAFCFF; }
+.bill-card-row1 { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.bill-card-num { font-weight: 700; color: var(--text); font-size: 14px; }
+.bill-card-total { font-weight: 700; color: var(--blue); font-size: 14px; font-variant-numeric: tabular-nums; }
+.bill-card-row2 { display: flex; justify-content: space-between; align-items: center; }
+.bill-card-cust { font-size: 13px; color: var(--text2); font-weight: 500; }
+.bill-card-date { font-size: 12px; color: var(--muted); }
+.bill-card-actions { display: flex; gap: 4px; }
+.btn-icon-sm {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; color: var(--muted); transition: all 150ms ease;
+}
+.btn-icon-sm:hover { background: var(--bg); color: var(--text); }
+.btn-icon-sm.danger:hover { background: var(--danger-lt); color: var(--danger); }
+
+/* Products List */
+.product-header {
+  display: grid; grid-template-columns: 70px 1fr 100px 90px; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted);
+}
+.product-row {
+  display: grid; grid-template-columns: 70px 1fr 100px 90px; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center;
+  transition: background 100ms ease;
+}
+.product-row:last-child { border-bottom: none; }
+.product-row:hover { background: #F8FAFC; }
+.product-code { font-size: 10px; font-weight: 700; color: var(--blue); background: var(--blue-lt); padding: 2px 6px; border-radius: 6px; display: inline-block; }
+.product-name { font-size: 14px; font-weight: 500; color: var(--text2); }
+.product-price { font-size: 13px; font-weight: 700; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
+.product-actions { display: flex; justify-content: flex-end; gap: 4px; }
+
+/* Empty State */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty-state i { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
+.empty-state-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+.empty-state-text { font-size: 13px; }
+
+/* Modals & Confirm */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(10,10,10,0.4); z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; animation: fadeIn 200ms ease forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+.modal-box {
+  background: var(--white); border-radius: 8px; width: 100%; max-width: 520px;
+  max-height: 90vh; display: flex; flex-direction: column;
+  transform: scale(0.95); opacity: 0; animation: scaleIn 200ms cubic-bezier(0.32,0.72,0,1) forwards;
+}
+@keyframes scaleIn { to { transform: scale(1); opacity: 1; } }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+.confirm-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0; background: var(--white);
+  border-radius: 12px 12px 0 0; z-index: 310; padding: 20px;
+  transform: translateY(100%); animation: slideUp 220ms cubic-bezier(0.32,0.72,0,1) forwards;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+@keyframes slideUp { to { transform: translateY(0); } }
+@media (min-width: 640px) {
+  .confirm-sheet {
+    position: static; transform: none; animation: scaleIn 200ms cubic-bezier(0.32,0.72,0,1) forwards;
+    max-width: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+}
+.confirm-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.confirm-message { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px; }
+.confirm-actions .btn { flex: 1; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); z-index: 400; pointer-events: none; }
+.toast {
+  background: var(--white); border-left: 3px solid var(--blue);
+  padding: 10px 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--text);
+  transform: translateY(60px); opacity: 0; animation: toastIn 300ms cubic-bezier(0.32,0.72,0,1) forwards;
+  pointer-events: auto; min-width: 200px;
+}
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+@keyframes toastIn { to { transform: translateY(0); opacity: 1; } }
+.toast.hiding { animation: toastOut 200ms ease forwards; }
+@keyframes toastOut { to { transform: translateY(60px); opacity: 0; } }
+
+/* View Bill Modal Specifics */
+.view-customer-block { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.view-cust-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.view-cust-detail { font-size: 13px; color: var(--muted); margin-bottom: 2px; }
+.view-date { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 12px; }
+.view-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+.view-table th { text-align: left; padding: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.view-table th:last-child, .view-table td:last-child { text-align: right; }
+.view-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--text2); }
+.view-table tr:nth-child(even) { background: #FAFCFF; }
+.view-table .num-col { color: var(--muted); font-size: 12px; width: 30px; }
+.view-grand-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+.view-notes { font-style: italic; color: var(--muted); font-size: 13px; background: var(--bg); padding: 12px; border-radius: 6px; margin-top: 12px; }
+
+/* Print Styles */
+.print-header { display: none; text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #000; }
+.print-header h1 { font-size: 20px; font-weight: 800; color: #000; margin-bottom: 4px; }
+.print-header p { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: white; color: black; padding: 0; }
+  .app-main { max-width: 100%; padding: 0; }
+  .page { display: block !important; opacity: 1 !important; }
+  .page:not(#page-bill) { display: none !important; }
+  .card { border: none; box-shadow: none; margin: 0; }
+  .card-header { display: none; }
+  .bill-meta-bar { margin-bottom: 12px; }
+  .input-std, .input-underline { border: none; padding: 0; background: transparent; }
+  .btn-add-item { display: none; }
+  .view-table { border: 1px solid #ddd; }
+  .view-table th, .view-table td { border: 1px solid #ddd; padding: 8px; }
+  
+  /* Thermal Printer Support */
+  body.thermal { max-width: 80mm; margin: 0 auto; font-size: 11px; }
+  body.thermal * { color: #000 !important; background: #fff !important; box-shadow: none !important; }
+  body.thermal .bill-number { font-size: 16px; }
+  body.thermal .grand-total-value, body.thermal .total-value.grand-val { font-size: 14px; }
+  body.thermal .view-table { font-size: 10px; }
+  body.thermal .view-table th, body.thermal .view-table td { padding: 4px; }
+  body.thermal .print-header h1 { font-size: 16px; }
+}
+.print-only { display: none; }
+
+/* Utility */
+.error-text { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+.error-text.visible { display: block; }
+</style>
+</head>
+<body>
+
+<header class="app-header no-print">
+  <div class="header-top">
+    <div class="app-title" id="appTitleDisplay">Billing App</div>
+    <div class="app-subtitle">Billing & Estimate</div>
+  </div>
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-page="bill">New Bill</button>
+    <button class="tab-btn" data-page="bills">Saved Bills</button>
+    <button class="tab-btn" data-page="products">Products</button>
+  </nav>
+</header>
+
+<main class="app-main">
+  <!-- Print Header (Visible only in print) -->
+  <div class="print-header print-only">
+    <h1 id="printAppName">Billing App</h1>
+    <p>Rough Estimate</p>
+  </div>
+
+  <!-- Page 1: New Bill -->
+  <section id="page-bill" class="page active">
+    <div class="bill-meta-bar">
+      <div class="bill-meta-left">
+        <span class="bill-meta-label">INVOICE</span>
+        <div class="bill-number" id="billNumberDisplay">INV-0001</div>
+        <div class="bill-meta-date" id="billDateDisplay">--</div>
+      </div>
+      <span class="badge-rough">Rough Estimate</span>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title"><i data-lucide="user" style="width:14px;height:14px;"></i> Customer Details</div>
+      </div>
+      <div class="card-body">
+        <div class="customer-grid">
+          <div class="field">
+            <label class="field-label">Name</label>
+            <input type="text" id="custName" class="input-std" placeholder="Party / Name" autocomplete="off">
+          </div>
+            <div class="field">
+            <label class="field-label">Mobile</label>
+            <input type="tel" id="custMobile" class="input-std" placeholder="9876543210" autocomplete="off">
+          </div>
+          <div class="field">
+            <label class="field-label">Address</label>
+            <input type="text" id="custAddress" class="input-std" placeholder="Optional" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Items</div>
+        <span class="item-count-badge" id="itemsCountLabel">0 items</span>
+      </div>
+      <div class="card-body" style="padding-top:8px; padding-bottom:8px;">
+        <div id="itemsContainer"></div>
+        <button class="btn-add-item" id="addItemBtn" type="button">
+          <i data-lucide="plus" style="width:16px;height:16px;"></i> Add Item
+        </button>
+      </div>
+    </div>
+
+    <div class="card totals-card">
+      <div class="card-body">
+        <div class="total-row">
+          <span class="total-label">Items</span>
+          <span class="total-value" id="totalItems">0</span>
+        </div>
+        <div class="total-row">
+          <span class="total-label">Subtotal</span>
+          <span class="total-value" id="totalSubtotal">₹0</span>
+        </div>
+        <div class="total-row divider grand">
+          <span class="total-label">Grand Total</span>
+          <span class="total-value grand-val" id="totalGrand">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title"><i data-lucide="file-text" style="width:14px;height:14px;"></i> Notes / Remarks</div>
+      </div>
+      <div class="card-body">
+        <textarea id="billNotes" class="input-std" placeholder="Optional notes..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page 2: Saved Bills -->
+  <section id="page-bills" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="page-title">Saved Bills</div>
+      <span class="item-count-badge" id="billsCountLabel">0 bills</span>
+    </div>
+    <div id="billsListContainer"></div>
+  </section>
+
+  <!-- Page 3: Products -->
+  <section id="page-products" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="page-title">Products</div>
+      <button class="btn btn-primary" id="addProductBtn" style="flex:none; padding:0 16px;">
+        <i data-lucide="plus" style="width:16px;height:16px;"></i> Add Product
+      </button>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="product-header">
+        <div>Code</div><div>Name</div><div style="text-align:right;">Price</div><div></div>
+      </div>
+      <div id="productsListContainer"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="action-bar no-print" id="actionBar"></footer>
+
+<div id="modalRoot"></div>
+<div id="toastRoot" class="toast-container"></div>
+<div id="autocompleteRoot"></div>
+
+<script>
+(function() {
+  // CONFIGURATION
+  const APP_NAME = 'Billing App';
+  const CURRENCY = '₹';
+  const LOCALE = 'en-IN';
+
+  // STORAGE KEYS
+  const LS_PRODUCTS = 'bq_products';
+  const LS_BILLS = 'bq_bills';
+  const LS_COUNTER = 'bq_bill_counter';
+  const LS_LAST_TAB = 'bq_last_tab';
+
+  // DEFAULT DATA
+  const DEFAULT_PRODUCTS = [
+    { code: '1', name: 'Gadda', price: 2500 },
+    { code: '2', name: 'Bedsheet', price: 800 },
+    { code: '3', name: 'Pillow', price: 350 },
+    { code: '4', name: 'Sofa', price: 25000 },
+    { code: '5', name: 'Chair', price: 1200 },
+    { code: '6', name: 'Table', price: 5000 },
+    { code: '7', name: 'Double Bed', price: 18000 },
+    { code: '8', name: 'Mattress', price: 6000 }
+  ];
+
+  // STATE
+  const state = {
+    products: [],
+    bills: [],
+    billCounter: 1,
+    currentPage: 'bill',
+    editingBillIndex: null,
+    items: [],
+    customer: { name: '', mobile: '', address: '' },
+    notes: '',
+    ac: { active: false, inputEl: null, rowIdx: null, results: [], highlighted: -1, dropdown: null }
+  };
+
+  // DOM CACHE
+  const dom = {
+    appTitle: document.getElementById('appTitleDisplay'),
+    printAppName: document.getElementById('printAppName'),
+    billNumber: document.getElementById('billNumberDisplay'),
+    billDate: document.getElementById('billDateDisplay'),
+    custName: document.getElementById('custName'),
+    custMobile: document.getElementById('custMobile'),
+    custAddress: document.getElementById('custAddress'),
+    billNotes: document.getElementById('billNotes'),
+    itemsContainer: document.getElementById('itemsContainer'),
+    itemsCountLabel: document.getElementById('itemsCountLabel'),
+    totalItems: document.getElementById('totalItems'),
+    totalSubtotal: document.getElementById('totalSubtotal'),
+    totalGrand: document.getElementById('totalGrand'),
+    billsListContainer: document.getElementById('billsListContainer'),
+    billsCountLabel: document.getElementById('billsCountLabel'),
+    productsListContainer: document.getElementById('productsListContainer'),
+    actionBar: document.getElementById('actionBar'),
+    modalRoot: document.getElementById('modalRoot'),
+    toastRoot: document.getElementById('toastRoot'),
+    acRoot: document.getElementById('autocompleteRoot')
+  };
+
+  // UTILITIES
+  function escHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function formatMoney(n) {
+    return CURRENCY + (Number(n) || 0).toLocaleString(LOCALE, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function padNum(n, len) {
+    return String(n).padStart(len, '0');
+  }
+
+  function formatBillNumber(n) {
+    return 'INV-' + padNum(n, 4);
+  }
+
+  function getFormattedDate() {
+    const d = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const day = d.getDate();
+    const month = months[d.getMonth()];
+    const year = d.getFullYear();
+    let hours = d.getHours();
+    const mins = padNum(d.getMinutes(), 2);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return { date: `${day} ${month} ${year}`, time: `${hours}:${mins} ${ampm}`, full: `${day} ${month} ${year} · ${hours}:${mins} ${ampm}` };
+  }
+
+  function getNextBillNumber() {
+    if (state.editingBillIndex !== null && state.bills[state.editingBillIndex]) {
+      return state.bills[state.editingBillIndex].billNumber;
+    }
+    return formatBillNumber(state.billCounter);
+  }
+
+  // STORAGE
+  function loadState() {
+    try {
+      const p = localStorage.getItem(LS_PRODUCTS);
+      state.products = p ? JSON.parse(p) : [...DEFAULT_PRODUCTS];
+      if (!p) saveProducts();
+    } catch (e) { state.products = [...DEFAULT_PRODUCTS]; saveProducts(); }
+
+    try {
+      const b = localStorage.getItem(LS_BILLS);
+      state.bills = b ? JSON.parse(b) : [];
+    } catch (e) { state.bills = []; }
+
+    try {
+      const c = localStorage.getItem(LS_COUNTER);
+      state.billCounter = c ? parseInt(c, 10) : 1;
+      if (isNaN(state.billCounter) || state.billCounter < 1) state.billCounter = 1;
+    } catch (e) { state.billCounter = 1; }
+
+    try {
+      const tab = localStorage.getItem(LS_LAST_TAB);
+      if (['bill', 'bills', 'products'].includes(tab)) state.currentPage = tab;
+    } catch (e) {}
+  }
+
+  function saveProducts() { localStorage.setItem(LS_PRODUCTS, JSON.stringify(state.products)); }
+  function saveBills() { localStorage.setItem(LS_BILLS, JSON.stringify(state.bills)); }
+  function saveCounter() { localStorage.setItem(LS_COUNTER, String(state.billCounter)); }
+  function saveTab() { localStorage.setItem(LS_LAST_TAB, state.currentPage); }
+
+  // TOAST
+  let toastTimer = null;
+  function showToast(msg, type = 'info') {
+    if (toastTimer) clearTimeout(toastTimer);
+    dom.toastRoot.innerHTML = '';
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const iconName = type === 'success' ? 'check-circle' : (type === 'error' ? 'alert-circle' : 'info');
+    t.innerHTML = `<i data-lucide="${iconName}" style="width:16px;height:16px;color:var(--${type === 'info' ? 'blue' : type});"></i><span>${escHtml(msg)}</span>`;
+    dom.toastRoot.appendChild(t);
+    lucide.createIcons();
+    toastTimer = setTimeout(() => {
+      t.classList.add('hiding');
+      setTimeout(() => t.remove(), 200);
+    }, 2400);
+  }
+
+  // CONFIRM DIALOG
+  function showConfirm(title, message, confirmLabel, isDanger, onConfirm) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-backdrop';
+    modal.innerHTML = `
+      <div class="confirm-sheet">
+        <div class="confirm-title">${escHtml(title)}</div>
+        <div class="confirm-message">${escHtml(message)}</div>
+        <div class="confirm-actions">
+          <button class="btn btn-outline" data-action="cancel">Cancel</button>
+          <button class="btn ${isDanger ? 'btn-danger-text' : 'btn-primary'}" data-action="confirm" style="border:${isDanger ? '1.5px solid var(--danger)' : 'none'}">${escHtml(confirmLabel)}</button>
+        </div>
+      </div>
+    `;
+    dom.modalRoot.appendChild(modal);
+    
+    const close = () => { modal.remove(); };
+    modal.querySelector('[data-action="cancel"]').addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    modal.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+      close();
+      if (onConfirm) onConfirm();
+    });
+  }
+
+  // NAVIGATION
+  function switchPage(page) {
+    const currentEl = document.querySelector('.page.active');
+    if (currentEl) {
+      currentEl.classList.add('fade-out');
+      setTimeout(() => {
+        currentEl.classList.remove('active', 'fade-out');
+        document.getElementById('page-' + page).classList.add('active');
+        state.currentPage = page;
+        saveTab();
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.page === page);
+        });
+        if (page === 'bill') renderBillPage();
+        else if (page === 'bills') renderBillsPage();
+        else if (page === 'products') renderProductsPage();
+        renderActionBar();
+        window.scrollTo(0, 0);
+      }, 80);
+    }
+  }
+
+  // BILLING LOGIC
+  function resetBillState() {
+    state.editingBillIndex = null;
+    state.items = [{ item: '', qty: '', price: '' }, { item: '', qty: '', price: '' }, { item: '', qty: '', price: '' }];
+    state.customer = { name: '', mobile: '', address: '' };
+    state.notes = '';
+  }
+
+  function hasUnsavedData() {
+    if (state.items.some(it => (it.item || '').trim() || Number(it.qty) > 0 || Number(it.price) > 0)) return true;
+    if ((state.customer.name || '').trim() || (state.customer.mobile || '').trim() || (state.customer.address || '').trim()) return true;
+    if ((state.notes || '').trim()) return true;
+    return false;
+  }
+
+  function renderBillPage() {
+    dom.appTitle.textContent = APP_NAME;
+    dom.printAppName.textContent = APP_NAME;
+    dom.billNumber.textContent = getNextBillNumber();
+    dom.billDate.textContent = getFormattedDate().full;
+    dom.custName.value = state.customer.name;
+    dom.custMobile.value = state.customer.mobile;
+    dom.custAddress.value = state.customer.address;
+    dom.billNotes.value = state.notes;
+    renderItems();
+    updateTotals();
+  }
+
+  function renderItems() {
+    dom.itemsContainer.innerHTML = '';
+    state.items.forEach((it, idx) => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.dataset.index = idx;
+      const total = (Number(it.qty) || 0) * (Number(it.price) || 0);
+      const hasVal = (Number(it.qty) || 0) > 0 || (Number(it.price) || 0) > 0;
+      
+      row.innerHTML = `
+        <div class="item-row-top">
+          <span class="item-serial">${idx + 1}</span>
+          <button class="btn-icon-delete" data-action="delete-row" title="Delete"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+        </div>
+        <div class="item-row-name">
+          <input type="text" class="input-underline item-name" placeholder="Item name" autocomplete="off" value="${escHtml(it.item || '')}">
+        </div>
+        <div class="item-row-bottom">
+          <input type="number" class="input-underline item-qty" placeholder="Qty" min="0" step="1" value="${it.qty ? escHtml(String(it.qty)) : ''}">
+          <input type="number" class="input-underline item-price" placeholder="Price" min="0" step="0.01" value="${it.price ? escHtml(String(it.price)) : ''}">
+          <span class="item-total ${hasVal ? '' : 'empty'}" style="color:${hasVal ? 'var(--text)' : 'var(--muted)'}; font-weight:${hasVal ? '600' : '400'};">${hasVal ? formatMoney(total) : '₹0'}</span>
+        </div>
+      `;
+      dom.itemsContainer.appendChild(row);
+    });
+    lucide.createIcons();
+    attachItemEvents();
+  }
+
+  function attachItemEvents() {
+    dom.itemsContainer.querySelectorAll('.item-row').forEach(row => {
+      const idx = parseInt(row.dataset.index, 10);
+      const nameInput = row.querySelector('.item-name');
+      const qtyInput = row.querySelector('.item-qty');
+      const priceInput = row.querySelector('.item-price');
+      const delBtn = row.querySelector('[data-action="delete-row"]');
+
+      nameInput.addEventListener('input', () => {
+        state.items[idx].item = nameInput.value;
+        openAutocomplete(nameInput, idx);
+      });
+      nameInput.addEventListener('focus', () => openAutocomplete(nameInput, idx));
+      nameInput.addEventListener('blur', () => setTimeout(() => closeAutocomplete(), 150));
+      nameInput.addEventListener('keydown', (e) => handleAcKeydown(e, nameInput, idx));
+
+      qtyInput.addEventListener('input', () => {
+        state.items[idx].qty = qtyInput.value;
+        updateRowTotal(idx);
+        updateTotals();
+      });
+      priceInput.addEventListener('input', () => {
+        state.items[idx].price = priceInput.value;
+        updateRowTotal(idx);
+        updateTotals();
+      });
+
+      delBtn.addEventListener('click', () => {
+        row.classList.add('deleting');
+        setTimeout(() => {
+          state.items.splice(idx, 1);
+          if (state.items.length === 0) state.items.push({ item: '', qty: '', price: '' });
+          renderItems();
+          updateTotals();
+        }, 180);
+      });
+    });
+  }
+
+  function updateRowTotal(idx) {
+    const row = dom.itemsContainer.querySelector(`.item-row[data-index="${idx}"]`);
+    if (!row) return;
+    const it = state.items[idx];
+    const total = (Number(it.qty) || 0) * (Number(it.price) || 0);
+    const hasVal = (Number(it.qty) || 0) > 0 || (Number(it.price) || 0) > 0;
+    const totalEl = row.querySelector('.item-total');
+    totalEl.textContent = hasVal ? formatMoney(total) : '₹0';
+    totalEl.style.color = hasVal ? 'var(--text)' : 'var(--muted)';
+    totalEl.style.fontWeight = hasVal ? '600' : '400';
+    
+    // Flash animation
+    totalEl.classList.add('flash-highlight');
+    setTimeout(() => totalEl.classList.remove('flash-highlight'), 300);
+  }
+
+  function updateTotals() {
+    let count = 0, grand = 0;
+    state.items.forEach(it => {
+      const q = Number(it.qty) || 0;
+      const p = Number(it.price) || 0;
+      if (q > 0 || p > 0) count++;
+      grand += q * p;
+    });
+    dom.totalItems.textContent = count;
+    dom.totalSubtotal.textContent = formatMoney(grand);
+    dom.totalGrand.textContent = formatMoney(grand);
+    dom.itemsCountLabel.textContent = `${count} item${count === 1 ? '' : 's'}`;
+    
+    [dom.totalSubtotal, dom.totalGrand].forEach(el => {
+      el.classList.add('flash-highlight');
+      setTimeout(() => el.classList.remove('flash-highlight'), 300);
+    });
+  }
+
+  // AUTOCOMPLETE
+  function openAutocomplete(inputEl, rowIdx) {
+    state.ac.inputEl = inputEl;
+    state.ac.rowIdx = rowIdx;
+    state.ac.highlighted = -1;
+    updateAutocomplete();
+  }
+
+  function updateAutocomplete() {
+    const q = (state.ac.inputEl.value || '').trim().toLowerCase();
+    if (!q) { closeAutocomplete(); return; }
+    
+    const results = [];
+    for (const p of state.products) {
+      if (String(p.code).toLowerCase().startsWith(q) || String(p.name).toLowerCase().includes(q)) {
+        results.push(p);
+        if (results.length >= 6) break;
+      }
+    }
+    state.ac.results = results;
+    if (results.length === 0) { closeAutocomplete(); return; }
+    renderAutocomplete();
+  }
+
+  function renderAutocomplete() {
+    let dd = state.ac.dropdown;
+    if (!dd) {
+      dd = document.createElement('div');
+      dd.className = 'autocomplete-dropdown';
+      dom.acRoot.appendChild(dd);
+      state.ac.dropdown = dd;
+    }
+    dd.innerHTML = '';
+    state.ac.results.forEach((p, i) => {
+      const item = document.createElement('div');
+      item.className = 'ac-item' + (i === state.ac.highlighted ? ' highlighted' : '');
+      item.innerHTML = `
+        <span class="ac-code">${escHtml(p.code)}</span>
+        <span class="ac-name">${escHtml(p.name)}</span>
+        <span class="ac-price">${formatMoney(p.price)}</span>
+      `;
+      item.addEventListener('mousedown', (e) => { e.preventDefault(); selectAcItem(i); });
+      dd.appendChild(item);
+    });
+    positionAc();
+    state.ac.active = true;
+  }
+
+  function positionAc() {
+    if (!state.ac.dropdown || !state.ac.inputEl) return;
+    const rect = state.ac.inputEl.getBoundingClientRect();
+    state.ac.dropdown.style.left = rect.left + 'px';
+    state.ac.dropdown.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+    state.ac.dropdown.style.width = rect.width + 'px';
+  }
+
+  function closeAutocomplete() {
+    if (state.ac.dropdown) { state.ac.dropdown.remove(); state.ac.dropdown = null; }
+    state.ac.active = false;
+    state.ac.results = [];
+    state.ac.highlighted = -1;
+    state.ac.inputEl = null;
+    state.ac.rowIdx = null;
+  }
+
+  function selectAcItem(i) {
+    const p = state.ac.results[i];
+    if (!p) return;
+    const idx = state.ac.rowIdx;
+    const row = dom.itemsContainer.querySelector(`.item-row[data-index="${idx}"]`);
+    if (!row) { closeAutocomplete(); return; }
+    
+    const nameInput = row.querySelector('.item-name');
+    const qtyInput = row.querySelector('.item-qty');
+    const priceInput = row.querySelector('.item-price');
+    
+    state.items[idx].item = p.name;
+    nameInput.value = p.name;
+    state.items[idx].price = p.price;
+    priceInput.value = p.price;
+    if (!Number(qtyInput.value)) {
+      state.items[idx].qty = 1;
+      qtyInput.value = 1;
+    }
+    updateRowTotal(idx);
+    updateTotals();
+    closeAutocomplete();
+    qtyInput.focus();
+    qtyInput.select();
+  }
+
+  function handleAcKeydown(e, inputEl, idx) {
+    if (!state.ac.active || state.ac.results.length === 0) {
+      if (e.key === 'Escape') closeAutocomplete();
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      state.ac.highlighted = (state.ac.highlighted + 1) % state.ac.results.length;
+      renderAutocomplete();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      state.ac.highlighted = (state.ac.highlighted - 1 + state.ac.results.length) % state.ac.results.length;
+      renderAutocomplete();
+    } else if (e.key === 'Enter') {
+      if (state.ac.highlighted >= 0) { e.preventDefault(); selectAcItem(state.ac.highlighted); }
+    } else if (e.key === 'Escape') {
+      e.preventDefault(); closeAutocomplete();
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    if (state.ac.active && state.ac.dropdown && !state.ac.dropdown.contains(e.target) && e.target !== state.ac.inputEl) {
+      closeAutocomplete();
+    }
+  });
+  window.addEventListener('scroll', () => { if (state.ac.active) positionAc(); }, true);
+  window.addEventListener('resize', () => { if (state.ac.active) positionAc(); });
+
+  // SAVE BILL
+  function confirmNewBill() {
+    if (hasUnsavedData()) {
+      showConfirm('Start new bill?', 'Unsaved changes will be lost.', 'Yes, Start New', true, () => {
+        resetBillState();
+        renderBillPage();
+        showToast('New bill started', 'info');
+      });
+    } else {
+      resetBillState();
+      renderBillPage();
+    }
+  }
+
+  function saveBill() {
+    const validItems = state.items.filter(it => (it.item || '').trim() || Number(it.qty) > 0 || Number(it.price) > 0);
+    if (validItems.length === 0) {
+      showToast('Add at least one item to save', 'error');
+      return;
+    }
+
+    const dt = getFormattedDate();
+    const items = validItems.map(it => ({
+      item: (it.item || '').trim() || 'Item',
+      qty: Number(it.qty) || 0,
+      price: Number(it.price) || 0,
+      total: (Number(it.qty) || 0) * (Number(it.price) || 0)
+    }));
+    const grand = items.reduce((s, it) => s + it.total, 0);
+    const customer = {
+      name: (state.customer.name || '').trim() || 'Customer',
+      mobile: (state.customer.mobile || '').trim(),
+      address: (state.customer.address || '').trim()
+    };
+    const notes = (state.notes || '').trim();
+
+    // Button animation
+    const saveBtn = document.getElementById('actSave');
+    const originalHtml = saveBtn.innerHTML;
+    saveBtn.innerHTML = `<i data-lucide="check" style="width:16px;height:16px;"></i> Saved`;
+    saveBtn.classList.add('btn-success-tint');
+    lucide.createIcons();
+    setTimeout(() => {
+      saveBtn.innerHTML = originalHtml;
+      saveBtn.classList.remove('btn-success-tint');
+      lucide.createIcons();
+    }, 800);
+
+    if (state.editingBillIndex !== null && state.bills[state.editingBillIndex]) {
+      const existing = state.bills[state.editingBillIndex];
+      existing.date = dt.date;
+      existing.time = dt.time;
+      existing.savedAt = new Date().toISOString();
+      existing.customer = customer;
+      existing.items = items;
+      existing.grand = grand;
+      existing.notes = notes;
+      saveBills();
+      showToast('Bill updated', 'success');
+    } else {
+      state.bills.push({
+        billNumber: formatBillNumber(state.billCounter),
+        date: dt.date, time: dt.time, savedAt: new Date().toISOString(),
+        customer, items, grand, notes
+      });
+      state.billCounter++;
+      saveBills();
+      saveCounter();
+      showToast('Bill saved', 'success');
+    }
+    resetBillState();
+    renderBillPage();
+  }
+
+  // SAVED BILLS
+  function renderBillsPage() {
+    dom.billsListContainer.innerHTML = '';
+    dom.billsCountLabel.textContent = `${state.bills.length} bill${state.bills.length === 1 ? '' : 's'}`;
+    
+    if (state.bills.length === 0) {
+      dom.billsListContainer.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="file-x"></i>
+          <div class="empty-state-title">No saved bills yet</div>
+          <div class="empty-state-text">Bills you save will appear here.</div>
+        </div>`;
+      lucide.createIcons();
+      return;
+    }
+
+    const list = document.createElement('div');
+    [...state.bills].reverse().forEach((bill, revIdx) => {
+      const idx = state.bills.length - 1 - revIdx;
+      const card = document.createElement('div');
+      card.className = 'bill-card';
+      card.innerHTML = `
+        <div class="bill-card-row1">
+          <span class="bill-card-num">${escHtml(bill.billNumber)}</span>
+          <span class="bill-card-total">${formatMoney(bill.grand)}</span>
+        </div>
+        <div class="bill-card-row2">
+          <span class="bill-card-cust">${escHtml(bill.customer.name || 'Customer')}</span>
+          <span class="bill-card-date">${escHtml(bill.date)}</span>
+          <div class="bill-card-actions">
+            <button class="btn-icon-sm" data-action="view" data-idx="${idx}" title="View"><i data-lucide="eye" style="width:16px;height:16px;"></i></button>
+            <button class="btn-icon-sm danger" data-action="delete" data-idx="${idx}" title="Delete"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('[data-action]')) return;
+        viewBill(idx);
+      });
+      list.appendChild(card);
+    });
+    dom.billsListContainer.appendChild(list);
+    lucide.createIcons();
+
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.idx, 10);
+      if (btn.dataset.action === 'view') viewBill(idx);
+      else if (btn.dataset.action === 'delete') confirmDeleteBill(idx);
+    });
+  }
+
+  function viewBill(idx) {
+    const bill = state.bills[idx];
+    if (!bill) return;
+    const modal = document.createElement('div');
+    modal.className = 'modal-backdrop';
+    modal.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title">${escHtml(bill.billNumber)}</div>
+          <button class="btn-icon-sm" data-close><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="view-customer-block">
+            <div class="view-cust-name">${escHtml(bill.customer.name || 'Customer')}</div>
+            ${bill.customer.mobile ? `<div class="view-cust-detail">${escHtml(bill.customer.mobile)}</div>` : ''}
+            ${bill.customer.address ? `<div class="view-cust-detail">${escHtml(bill.customer.address)}</div>` : ''}
+          </div>
+          <div class="view-date">${escHtml(bill.date)} · ${escHtml(bill.time)}</div>
+          <table class="view-table">
+            <thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+            <tbody>
+              ${(bill.items || []).map((it, i) => `
+                <tr>
+                  <td class="num-col">${i + 1}</td>
+                  <td>${escHtml(it.item)}</td>
+                  <td>${it.qty}</td>
+                  <td>${formatMoney(it.price)}</td>
+                  <td style="font-weight:600;">${formatMoney(it.total)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          ${bill.notes ? `<div class="view-notes">${escHtml(bill.notes)}</div>` : ''}
+          <div class="view-grand-row">
+            <span style="font-weight:600;">Grand Total</span>
+            <span class="grand-total-value">${formatMoney(bill.grand)}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" data-close>Close</button>
+          <button class="btn btn-outline" data-action="thermal-print"><i data-lucide="printer" style="width:14px;height:14px;"></i> Thermal</button>
+          <button class="btn btn-outline" data-action="print"><i data-lucide="printer" style="width:14px;height:14px;"></i> Print</button>
+          <button class="btn btn-primary" data-action="edit">Edit</button>
+        </div>
+      </div>
+    `;
+    dom.modalRoot.appendChild(modal);
+    lucide.createIcons();
+
+    const close = () => { modal.remove(); document.body.classList.remove('thermal'); };
+    modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    modal.querySelector('[data-action="edit"]').addEventListener('click', () => { close(); editBill(idx); });
+    modal.querySelector('[data-action="print"]').addEventListener('click', () => { close(); editBill(idx, false, true); });
+    modal.querySelector('[data-action="thermal-print"]').addEventListener('click', () => { 
+      close(); 
+      document.body.classList.add('thermal');
+      setTimeout(() => { window.print(); document.body.classList.remove('thermal'); }, 100);
+    });
+  }
+
+  function editBill(idx, reset = false, printAfter = false) {
+    if (reset) { confirmNewBill(); return; }
+    const bill = state.bills[idx];
+    if (!bill) return;
+    state.editingBillIndex = idx;
+    state.items = (bill.items || []).map(it => ({ item: it.item || '', qty: it.qty || '', price: it.price || '' }));
+    if (state.items.length === 0) state.items = [{ item: '', qty: '', price: '' }];
+    state.customer = {
+      name: (bill.customer && bill.customer.name !== 'Customer') ? bill.customer.name : '',
+      mobile: (bill.customer && bill.customer.mobile) || '',
+      address: (bill.customer && bill.customer.address) || ''
+    };
+    state.notes = bill.notes || '';
+    switchPage('bill');
+    if (printAfter) setTimeout(() => window.print(), 200);
+  }
+
+  function confirmDeleteBill(idx) {
+    const bill = state.bills[idx];
+    showConfirm('Delete bill?', `Are you sure you want to delete ${bill.billNumber}? This cannot be undone.`, 'Delete', true, () => {
+      state.bills.splice(idx, 1);
+      saveBills();
+      renderBillsPage();
+      showToast('Bill deleted', 'success');
+    });
+  }
+
+  // PRODUCTS
+  function renderProductsPage() {
+    dom.productsListContainer.innerHTML = '';
+    if (state.products.length === 0) {
+      dom.productsListContainer.innerHTML = `
+        <div class="empty-state" style="padding:32px 20px;">
+          <i data-lucide="package" style="width:32px;height:32px;"></i>
+          <div class="empty-state-title">No products yet</div>
+          <div class="empty-state-text">Add your first product to start billing faster.</div>
+        </div>`;
+      lucide.createIcons();
+      return;
+    }
+
+    state.products.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'product-row';
+      row.innerHTML = `
+        <span class="product-code">${escHtml(p.code)}</span>
+        <span class="product-name">${escHtml(p.name)}</span>
+        <span class="product-price">${formatMoney(p.price)}</span>
+        <div class="product-actions">
+          <button class="btn-icon-sm" data-action="edit" data-idx="${i}"><i data-lucide="pencil" style="width:16px;height:16px;"></i></button>
+          <button class="btn-icon-sm danger" data-action="delete" data-idx="${i}"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+        </div>
+      `;
+      dom.productsListContainer.appendChild(row);
+    });
+    lucide.createIcons();
+
+    dom.productsListContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.idx, 10);
+      if (btn.dataset.action === 'edit') openProductModal(idx);
+      else if (btn.dataset.action === 'delete') confirmDeleteProduct(idx);
+    });
+  }
+
+  function openProductModal(idx) {
+    const isEdit = idx !== null && idx !== undefined;
+    const p = isEdit ? state.products[idx] : { code: '', name: '', price: 0 };
+    const modal = document.createElement('div');
+    modal.className = 'modal-backdrop';
+    modal.innerHTML = `
+      <div class="modal-box" style="max-width:400px;">
+        <div class="modal-header">
+          <div class="modal-title">${isEdit ? 'Edit Product' : 'Add Product'}</div>
+          <button class="btn-icon-sm" data-close><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="field-label">Product Code *</label>
+            <input type="text" id="pCode" class="input-std" value="${escHtml(p.code || '')}" autocomplete="off">
+            <div class="error-text" id="errCode">Code is required</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Product Name *</label>
+            <input type="text" id="pName" class="input-std" value="${escHtml(p.name || '')}" autocomplete="off">
+            <div class="error-text" id="errName">Name is required</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Default Price (₹)</label>
+            <input type="number" id="pPrice" class="input-std" min="0" step="0.01" value="${p.price ? escHtml(String(p.price)) : ''}" autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" data-close>Cancel</button>
+          <button class="btn btn-primary" data-action="save">${isEdit ? 'Save Changes' : 'Add Product'}</button>
+        </div>
+      </div>
+    `;
+    dom.modalRoot.appendChild(modal);
+    lucide.createIcons();
+
+    const close = () => { modal.remove(); };
+    modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    
+    const saveHandler = () => {
+      const code = document.getElementById('pCode').value.trim();
+      const name = document.getElementById('pName').value.trim();
+      const price = parseFloat(document.getElementById('pPrice').value) || 0;
+      let valid = true;
+      
+      document.getElementById('errCode').classList.toggle('visible', !code);
+      document.getElementById('errName').classList.toggle('visible', !name);
+      if (!code || !name) { valid = false; }
+      
+      if (valid) {
+        if (isEdit) state.products[idx] = { code, name, price };
+        else state.products.push({ code, name, price });
+        saveProducts();
+        close();
+        renderProductsPage();
+        showToast(isEdit ? 'Product updated' : 'Product added', 'success');
+      }
+    };
+    
+    modal.querySelector('[data-action="save"]').addEventListener('click', saveHandler);
+    modal.querySelectorAll('input').forEach(input => {
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveHandler(); });
+    });
+    setTimeout(() => document.getElementById('pCode').focus(), 50);
+  }
+
+  function confirmDeleteProduct(idx) {
+    const p = state.products[idx];
+    showConfirm('Delete product?', `Are you sure you want to delete "${p.name}"? This cannot be undone.`, 'Delete', true, () => {
+      state.products.splice(idx, 1);
+      saveProducts();
+      renderProductsPage();
+      showToast('Product deleted', 'success');
+    });
+  }
+
+  // ACTION BAR
+  function renderActionBar() {
+    dom.actionBar.innerHTML = '';
+    if (state.currentPage === 'bill') {
+      dom.actionBar.innerHTML = `
+        <button class="btn btn-outline" id="actNew"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i> New Bill</button>
+        <button class="btn btn-outline" id="actPrint"><i data-lucide="printer" style="width:16px;height:16px;"></i> Print</button>
+        <button class="btn btn-primary" id="actSave"><i data-lucide="check" style="width:16px;height:16px;"></i> Save Bill</button>
+      `;
+      document.getElementById('actNew').addEventListener('click', confirmNewBill);
+      document.getElementById('actPrint').addEventListener('click', () => window.print());
+      document.getElementById('actSave').addEventListener('click', saveBill);
+    } else if (state.currentPage === 'bills') {
+      dom.actionBar.innerHTML = `<button class="btn btn-primary" id="actNewBill"><i data-lucide="plus" style="width:16px;height:16px;"></i> New Bill</button>`;
+      document.getElementById('actNewBill').addEventListener('click', () => switchPage('bill'));
+    } else if (state.currentPage === 'products') {
+      dom.actionBar.innerHTML = `<button class="btn btn-primary" id="actAddProd"><i data-lucide="plus" style="width:16px;height:16px;"></i> Add Product</button>`;
+      document.getElementById('actAddProd').addEventListener('click', () => openProductModal(null));
+    }
+    lucide.createIcons();
+  }
+
+  // EVENTS
+  function setupEvents() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchPage(btn.dataset.page));
+    });
+    dom.custName.addEventListener('input', (e) => { state.customer.name = e.target.value; });
+    dom.custMobile.addEventListener('input', (e) => { state.customer.mobile = e.target.value; });
+    dom.custAddress.addEventListener('input', (e) => { state.customer.address = e.target.value; });
+    dom.billNotes.addEventListener('input', (e) => { state.notes = e.target.value; });
+    
+    document.getElementById('addItemBtn').addEventListener('click', () => {
+      state.items.push({ item: '', qty: '', price: '' });
+      renderItems();
+      setTimeout(() => {
+        const rows = dom.itemsContainer.querySelectorAll('.item-row');
+        const last = rows[rows.length - 1];
+        if (last) {
+          const input = last.querySelector('.item-name');
+          if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }
+      }, 50);
+    });
+
+    document.getElementById('addProductBtn').addEventListener('click', () => openProductModal(null));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (dom.modalRoot.children.length > 0) dom.modalRoot.innerHTML = '';
+        else closeAutocomplete();
+      }
+    });
+  }
+
+  // INIT
+  function init() {
+    loadState();
+    resetBillState();
+    setupEvents();
+    switchPage(state.currentPage);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
