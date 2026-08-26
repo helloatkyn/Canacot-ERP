@@ -1,0 +1,818 @@
+/* ============================================================
+   DESKTOP ENTERPRISE OVERRIDE
+   Applies only at >= 1024px — zero mobile side effects.
+   Drop this AFTER base.css and responsive.css.
+   ============================================================ */
+
+/* ============================================================
+   DESIGN TOKENS — Enterprise Refinements
+   ============================================================ */
+@media (min-width: 1024px) {
+    :root {
+        /* Sidebar */
+        --sidebar-bg:          #0d2347;
+        --sidebar-bg-hover:    rgba(255,255,255,0.06);
+        --sidebar-bg-active:   rgba(255,255,255,0.12);
+        --sidebar-accent:      #3b82f6;
+        --sidebar-border:      rgba(255,255,255,0.07);
+        --sidebar-text:        rgba(255,255,255,0.60);
+        --sidebar-text-active: #ffffff;
+        --sidebar-width:       220px;
+
+        /* Header */
+        --header-height:       56px;
+        --header-bg:           #ffffff;
+        --header-border:       #e2e8f2;
+
+        /* App shell */
+        --app-bg:              #f0f3f8;
+
+        /* Cards — slightly elevated */
+        --card-radius:         8px;
+        --card-shadow:         0 1px 3px rgba(17,45,96,0.06), 0 4px 12px rgba(17,45,96,0.04);
+        --card-border:         #e2e8f2;
+
+        /* KPI accent strip */
+        --kpi-strip:           3px;
+
+        /* Table */
+        --table-head-bg:       #f7f9fc;
+        --table-head-color:    #5a6a7e;
+        --table-row-hover:     #f4f7fb;
+        --table-border:        #e8edf5;
+    }
+}
+
+/* ============================================================
+   BODY / SHELL
+   ============================================================ */
+@media (min-width: 1024px) {
+    body {
+        background: var(--app-bg);
+        font-size: 13.5px;
+    }
+}
+
+/* ============================================================
+   SIDEBAR — Narrow, dark, enterprise
+   ============================================================ */
+@media (min-width: 1024px) {
+    .desktop-sidebar {
+        width: var(--sidebar-width);
+        background: var(--sidebar-bg);
+        border-right: 1px solid rgba(255,255,255,0.04);
+        padding: 0;
+        box-shadow: 1px 0 0 rgba(255,255,255,0.04),
+                    3px 0 16px rgba(0,0,0,0.18);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Brand strip at top */
+    .sidebar-brand {
+        height: var(--header-height);
+        padding: 0 18px;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        color: #ffffff;
+        border-bottom: 1px solid var(--sidebar-border);
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    .sidebar-brand span { color: var(--sidebar-accent); }
+
+    /* Nav container */
+    .sidebar-nav {
+        flex: 1;
+        padding: 10px 8px;
+        gap: 1px;
+        overflow-y: auto;
+    }
+
+    /* Section label */
+    .sidebar-section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        padding: 14px 12px 6px;
+        display: block;
+    }
+
+    /* Nav buttons */
+    .sidebar-btn {
+        padding: 9px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--sidebar-text);
+        gap: 10px;
+        transition: background 0.12s ease, color 0.12s ease;
+        position: relative;
+    }
+    .sidebar-btn svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.75;
+        flex-shrink: 0;
+        transition: opacity 0.12s;
+    }
+    .sidebar-btn:hover {
+        background: var(--sidebar-bg-hover);
+        color: #ffffff;
+    }
+    .sidebar-btn:hover svg { opacity: 1; }
+
+    .sidebar-btn.active {
+        background: var(--sidebar-bg-active);
+        color: var(--sidebar-text-active);
+        font-weight: 600;
+    }
+    .sidebar-btn.active svg { opacity: 1; }
+
+    /* Active accent bar on left edge */
+    .sidebar-btn.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: var(--sidebar-accent);
+        border-radius: 0 2px 2px 0;
+    }
+
+    /* Divider */
+    .sidebar-divider {
+        height: 1px;
+        background: var(--sidebar-border);
+        margin: 8px 12px;
+    }
+
+    /* Footer */
+    .sidebar-footer {
+        padding: 12px 16px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.25);
+        border-top: 1px solid var(--sidebar-border);
+        letter-spacing: 0.2px;
+        flex-shrink: 0;
+    }
+}
+
+/* ============================================================
+   MAIN WRAPPER — account for sidebar
+   ============================================================ */
+@media (min-width: 1024px) {
+    .desktop-main-wrapper {
+        margin-left: var(--sidebar-width);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+}
+
+/* ============================================================
+   HEADER — Clean white topbar
+   ============================================================ */
+@media (min-width: 1024px) {
+    .desktop-header {
+        height: var(--header-height);
+        background: var(--header-bg);
+        border-bottom: 1px solid var(--header-border);
+        padding: 0 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        box-shadow: 0 1px 0 var(--header-border),
+                    0 2px 8px rgba(17,45,96,0.04);
+    }
+
+    .page-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0d2347;
+        letter-spacing: -0.2px;
+        margin: 0;
+    }
+
+    .header-date {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+        background: var(--app-bg);
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--card-border);
+        letter-spacing: 0.1px;
+    }
+}
+
+/* ============================================================
+   APP MAIN — Content area
+   ============================================================ */
+@media (min-width: 1024px) {
+    .app-main {
+        padding: 20px 24px;
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
+        padding-bottom: 40px;
+        flex: 1;
+    }
+}
+
+/* ============================================================
+   KPI CARDS — Enterprise stat tiles
+   ============================================================ */
+@media (min-width: 1024px) {
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .kpi-card {
+        background: var(--header-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        padding: 16px 18px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+        transition: box-shadow 0.15s ease;
+    }
+    .kpi-card:hover {
+        box-shadow: 0 4px 16px rgba(17,45,96,0.10);
+    }
+
+    /* Colored left border accent per card */
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: var(--kpi-strip);
+        background: var(--navy-mid);
+        border-radius: var(--card-radius) 0 0 var(--card-radius);
+    }
+    .kpi-card:nth-child(1)::before { background: #1b4fb8; }
+    .kpi-card:nth-child(2)::before { background: #16a34a; }
+    .kpi-card:nth-child(3)::before { background: #d97706; }
+    .kpi-card:nth-child(4)::before { background: #7c3aed; }
+
+    .kpi-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        flex-shrink: 0;
+    }
+    .kpi-card:nth-child(1) .kpi-icon { background: #dbeafe; color: #1b4fb8; }
+    .kpi-card:nth-child(2) .kpi-icon { background: #dcfce7; color: #16a34a; }
+    .kpi-card:nth-child(3) .kpi-icon { background: #fef3c7; color: #d97706; }
+    .kpi-card:nth-child(4) .kpi-icon { background: #ede9fe; color: #7c3aed; }
+
+    .kpi-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+    }
+
+    .kpi-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0d2347;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.5px;
+        line-height: 1;
+    }
+
+    .kpi-sub {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+/* ============================================================
+   ANALYTICS GRID — Charts
+   ============================================================ */
+@media (min-width: 1024px) {
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .chart-card {
+        background: var(--header-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        padding: 18px 20px;
+        box-shadow: var(--card-shadow);
+    }
+    .chart-card.full-width { grid-column: 1 / -1; }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--table-border);
+    }
+    .chart-header h3 {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0d2347;
+        letter-spacing: -0.1px;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .range-selector {
+        background: var(--app-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 5px;
+        padding: 2px;
+        gap: 2px;
+    }
+    .range-selector button {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: var(--text-secondary);
+    }
+    .range-selector button.active {
+        background: var(--header-bg);
+        color: var(--navy-mid);
+        box-shadow: 0 1px 3px rgba(17,45,96,0.10);
+    }
+
+    .chart-container { height: 220px; }
+}
+
+/* ============================================================
+   CARDS — General content cards
+   ============================================================ */
+@media (min-width: 1024px) {
+    .card {
+        background: var(--header-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        padding: 20px;
+        margin-bottom: 14px;
+    }
+
+    .card-header {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--table-border);
+    }
+
+    .card-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+    }
+}
+
+/* ============================================================
+   INVOICE HEADER CARD
+   ============================================================ */
+@media (min-width: 1024px) {
+    .invoice-header.card {
+        background: var(--sidebar-bg);
+        border-radius: var(--card-radius);
+        padding: 16px 22px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(13,35,71,0.18);
+    }
+    .invoice-header.card::before,
+    .invoice-header.card::after { display: none; }
+
+    .invoice-label {
+        font-size: 10px;
+        letter-spacing: 1.2px;
+        color: rgba(255,255,255,0.45);
+    }
+    .invoice-number {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+    }
+
+    .item-count {
+        background: rgba(255,255,255,0.10);
+        color: rgba(255,255,255,0.75);
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+}
+
+/* ============================================================
+   FORMS & INPUTS
+   ============================================================ */
+@media (min-width: 1024px) {
+    .form-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+    }
+
+    .form-input, .form-textarea {
+        border: 1px solid var(--card-border);
+        border-radius: 5px;
+        font-size: 13.5px;
+        padding: 8px 11px;
+        background: var(--header-bg);
+        transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--navy-mid);
+        box-shadow: 0 0 0 3px rgba(27,79,184,0.10);
+        outline: none;
+    }
+}
+
+/* ============================================================
+   DESKTOP TABLE (Saved Bills etc.)
+   ============================================================ */
+@media (min-width: 1024px) {
+    .desktop-table-container {
+        background: var(--header-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    /* Toolbar above table */
+    .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--table-border);
+        background: var(--table-head-bg);
+    }
+    .table-toolbar-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--text-secondary);
+    }
+
+    .desktop-table {
+        font-size: 13px;
+    }
+    .desktop-table th {
+        background: var(--table-head-bg);
+        padding: 9px 14px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--table-head-color);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--table-border);
+        white-space: nowrap;
+    }
+    .desktop-table td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--table-border);
+        color: var(--text-primary);
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .desktop-table tr:last-child td { border-bottom: none; }
+    .desktop-table tr:hover td {
+        background: var(--table-row-hover);
+    }
+
+    /* Status badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+    .badge-info    { background: #dbeafe; color: #1d4ed8; }
+
+    /* Table action buttons — tighter */
+    .table-actions { gap: 4px; }
+    .table-actions .btn-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 5px;
+        background: transparent;
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+        transition: all 0.12s;
+    }
+    .table-actions .btn-icon:hover {
+        background: var(--app-bg);
+        border-color: var(--navy-mid);
+        color: var(--navy-mid);
+    }
+}
+
+/* ============================================================
+   PRODUCTS LIST — Desktop
+   ============================================================ */
+@media (min-width: 1024px) {
+    .product-row {
+        background: var(--header-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-bottom: 6px;
+        box-shadow: none;
+        transition: background 0.12s, box-shadow 0.12s;
+    }
+    .product-row:hover {
+        background: var(--table-row-hover);
+        box-shadow: 0 1px 4px rgba(17,45,96,0.07);
+    }
+
+    .product-name {
+        font-size: 13.5px;
+        font-weight: 600;
+    }
+
+    .product-meta .product-code {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        padding: 1px 6px;
+        border-radius: 3px;
+    }
+}
+
+/* ============================================================
+   BUTTONS — Desktop refinements
+   ============================================================ */
+@media (min-width: 1024px) {
+    .btn {
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 5px;
+        letter-spacing: 0.1px;
+        transition: all 0.12s ease;
+    }
+
+    .btn-primary {
+        background: var(--navy-mid);
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(27,79,184,0.25);
+    }
+    .btn-primary:hover {
+        background: #163fa0;
+        box-shadow: 0 3px 10px rgba(27,79,184,0.30);
+    }
+    .btn-primary:active { transform: translateY(1px); box-shadow: none; }
+
+    .btn-outline {
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+        background: var(--header-bg);
+    }
+    .btn-outline:hover {
+        border-color: var(--navy-mid);
+        color: var(--navy-mid);
+        background: #eff5ff;
+    }
+
+    .btn-danger {
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid #fecaca;
+    }
+    .btn-danger:hover {
+        background: #fef2f2;
+        border-color: var(--danger);
+    }
+
+    /* Icon-only buttons */
+    .btn-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   MODALS — Desktop centered
+   ============================================================ */
+@media (min-width: 1024px) {
+    .modal-overlay {
+        align-items: center;
+        background: rgba(10,20,50,0.35);
+        backdrop-filter: blur(3px);
+    }
+    .modal {
+        border-radius: 8px;
+        max-height: 80vh;
+        width: 520px;
+        animation: modalScaleIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalScaleIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to   { opacity: 1; transform: scale(1);    }
+    }
+
+    .modal-header {
+        background: var(--sidebar-bg);
+        padding: 14px 18px;
+        border-bottom: none;
+    }
+    .modal-header h2 {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+    }
+
+    .modal-body { padding: 20px; }
+    .modal-footer {
+        padding: 12px 18px;
+        background: var(--table-head-bg);
+        border-top: 1px solid var(--table-border);
+    }
+}
+
+/* ============================================================
+   NEW BILL PAGE — Desktop two-column
+   ============================================================ */
+@media (min-width: 1024px) {
+    #page-new-bill.active {
+        grid-template-columns: 1fr 340px;
+        gap: 16px;
+    }
+    #page-new-bill > .totals-card,
+    #page-new-bill > .card:last-child {
+        top: calc(var(--header-height) + 16px);
+    }
+}
+
+/* ============================================================
+   TOTALS CARD
+   ============================================================ */
+@media (min-width: 1024px) {
+    .totals-card .totals-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--table-border);
+        font-size: 13px;
+    }
+    .totals-card .totals-row:last-child { border-bottom: none; }
+    .totals-card .totals-row.total-final {
+        font-weight: 700;
+        font-size: 15px;
+        color: #0d2347;
+        padding-top: 12px;
+        margin-top: 4px;
+        border-top: 2px solid var(--navy-mid);
+        border-bottom: none;
+    }
+}
+
+/* ============================================================
+   ITEMS TABLE (in bill)
+   ============================================================ */
+@media (min-width: 1024px) {
+    .items-table {
+        font-size: 13px;
+    }
+    .items-table th {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        background: var(--table-head-bg);
+        padding: 8px 10px;
+    }
+    .items-table td {
+        padding: 10px 10px;
+        vertical-align: middle;
+    }
+    .items-table tfoot td {
+        background: #f0f5ff;
+        color: var(--navy-mid);
+        font-weight: 700;
+    }
+}
+
+/* ============================================================
+   TOAST — Desktop top-right
+   ============================================================ */
+@media (min-width: 1024px) {
+    .toast-container {
+        top: calc(var(--header-height) + 12px);
+        left: auto;
+        right: 20px;
+        transform: none;
+        max-width: 300px;
+        width: auto;
+    }
+    .toast {
+        font-size: 13px;
+        border-radius: 6px;
+        text-align: left;
+        padding: 10px 14px;
+        border-left: 3px solid rgba(255,255,255,0.35);
+    }
+    @keyframes toastIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to   { opacity: 1; transform: translateX(0);   }
+    }
+}
+
+/* ============================================================
+   AUTOCOMPLETE — Desktop
+   ============================================================ */
+@media (min-width: 1024px) {
+    .autocomplete-dropdown {
+        border-radius: 6px;
+        border-color: var(--card-border);
+        box-shadow: 0 8px 24px rgba(17,45,96,0.12);
+    }
+    .ac-item {
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+    .ac-name { font-size: 13px; }
+    .ac-meta { font-size: 11.5px; }
+}
+
+/* ============================================================
+   SCROLLBARS — Thin, subtle
+   ============================================================ */
+@media (min-width: 1024px) {
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(17,45,96,0.15);
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(17,45,96,0.28);
+    }
+}
+
+/* ============================================================
+   FOCUS RING — Keyboard accessibility
+   ============================================================ */
+@media (min-width: 1024px) {
+    :focus-visible {
+        outline: 2px solid var(--navy-mid);
+        outline-offset: 2px;
+    }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@prefers-reduced-motion: reduce {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
