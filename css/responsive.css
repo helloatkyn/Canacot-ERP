@@ -3,7 +3,7 @@ MOBILE LOCK (< 768px)
 ========================================== */
 @media (max-width: 767px) {
     .desktop-sidebar, .desktop-header, .desktop-dashboard { display: none !important; }
-    .app-header, .segmented-nav, .action-bar { display: flex; } /* Ensure mobile elements visible */
+    .app-header, .segmented-nav, .action-bar { display: flex; }
     .app-main { padding-bottom: 108px; }
 }
 
@@ -16,7 +16,6 @@ TABLET (768px - 1023px)
     .segmented-nav { max-width: 360px; margin: 0; }
     .app-main { padding: 24px; padding-bottom: 90px; }
     
-    /* Two column layout for new bill on tablet */
     #page-new-bill.active { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
     #page-new-bill > .invoice-header, #page-new-bill > .card:nth-child(2), #page-new-bill > .card:nth-child(3) { grid-column: 1; }
     #page-new-bill > .totals-card, #page-new-bill > .card:last-child { grid-column: 2; grid-row: 1 / span 3; position: sticky; top: 74px; }
@@ -35,55 +34,145 @@ DESKTOP ENTERPRISE SHELL (>= 1024px)
 @media (min-width: 1024px) {
     /* Hide Mobile Chrome */
     .app-header, .segmented-nav, .action-bar { display: none !important; }
-    
-    /* Show Desktop Chrome */
+
+    /* ── Sidebar ── */
     .desktop-sidebar {
         display: flex; flex-direction: column;
         position: fixed; left: 0; top: 0; bottom: 0;
-        width: 240px; background: var(--navy-dark);
-        padding: 20px 0; z-index: 100;
-        box-shadow: 2px 0 12px rgba(17,45,96,0.15);
+        width: 248px;
+        background: linear-gradient(180deg, #0d2552 0%, #112d60 60%, #0f2858 100%);
+        padding: 0; z-index: 100;
+        box-shadow: 2px 0 20px rgba(10,25,60,0.22);
+        border-right: 1px solid rgba(255,255,255,0.06);
     }
+
+    /* Sidebar brand strip */
     .sidebar-brand {
-        color: #ffffff; font-size: 18px; font-weight: 700;
-        padding: 0 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 16px; letter-spacing: -0.3px;
+        display: flex; align-items: center; gap: 10px;
+        color: #ffffff; font-size: 16px; font-weight: 800;
+        padding: 22px 20px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 8px;
+        letter-spacing: -0.4px;
     }
+    .sidebar-brand-icon {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; box-shadow: 0 2px 8px rgba(59,130,246,0.40);
+        font-size: 15px; font-weight: 900; color: #fff;
+    }
+    .sidebar-brand-text { flex: 1; line-height: 1.15; }
+    .sidebar-brand-text small { display: block; font-size: 9.5px; font-weight: 500; color: rgba(255,255,255,0.40); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 1px; }
     .sidebar-brand span { color: #60a5fa; }
-    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+
+    /* Section labels */
+    .sidebar-section-label {
+        font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; color: rgba(255,255,255,0.30);
+        padding: 14px 20px 4px; margin: 0;
+    }
+
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 4px 10px; overflow-y: auto; }
     .sidebar-btn {
-        display: flex; align-items: center; gap: 12px;
-        padding: 10px 14px; border-radius: 8px;
-        color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 11px;
+        padding: 9px 14px; border-radius: 8px;
+        color: rgba(255,255,255,0.62); font-size: 13.5px; font-weight: 500;
         background: transparent; border: none; cursor: pointer;
-        transition: all 0.14s ease; text-align: left; width: 100%;
+        transition: background 0.13s ease, color 0.13s ease;
+        text-align: left; width: 100%; position: relative;
     }
-    .sidebar-btn:hover { background: rgba(255,255,255,0.08); color: #ffffff; }
-    .sidebar-btn.active { background: rgba(255,255,255,0.15); color: #ffffff; font-weight: 600; }
-    .sidebar-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .sidebar-footer { padding: 16px 20px; font-size: 11px; color: rgba(255,255,255,0.4); border-top: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-btn:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.92); }
+    .sidebar-btn.active {
+        background: rgba(96,165,250,0.15); color: #ffffff; font-weight: 600;
+        box-shadow: inset 0 0 0 1px rgba(96,165,250,0.20);
+    }
+    .sidebar-btn.active::before {
+        content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+        width: 3px; border-radius: 0 3px 3px 0;
+        background: #60a5fa;
+        left: -10px;
+    }
+    .sidebar-btn svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.85; }
+    .sidebar-btn.active svg { opacity: 1; }
 
-    .desktop-main-wrapper { margin-left: 240px; min-height: 100vh; display: flex; flex-direction: column; }
-    
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 10px; }
+
+    .sidebar-footer {
+        padding: 14px 20px;
+        font-size: 10.5px; color: rgba(255,255,255,0.28);
+        border-top: 1px solid rgba(255,255,255,0.07);
+        display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-footer-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+
+    /* ── Main wrapper ── */
+    .desktop-main-wrapper { margin-left: 248px; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg-app); }
+
+    /* ── Desktop header ── */
     .desktop-header {
-        background: var(--bg-card); border-bottom: 1px solid var(--border-color);
-        padding: 16px 32px; display: flex; justify-content: space-between; align-items: center;
-        position: sticky; top: 0; z-index: 90; box-shadow: var(--shadow-xs);
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0 32px;
+        height: 60px;
+        display: flex; justify-content: space-between; align-items: center;
+        position: sticky; top: 0; z-index: 90;
+        box-shadow: 0 1px 0 var(--border-color), 0 2px 8px rgba(17,45,96,0.04);
     }
-    .page-title { margin: 0; font-size: 20px; font-weight: 700; color: var(--navy-dark); letter-spacing: -0.3px; }
-    .header-date { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    .desktop-header-left { display: flex; align-items: center; gap: 20px; }
+    .page-title { margin: 0; font-size: 17px; font-weight: 800; color: var(--navy-dark); letter-spacing: -0.4px; }
+    .page-breadcrumb { font-size: 12px; color: var(--text-tertiary); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .page-breadcrumb::before { content: '/'; color: var(--border-color); }
 
+    .desktop-header-right { display: flex; align-items: center; gap: 12px; }
+    .header-date {
+        font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums;
+        background: var(--bg-hover); padding: 5px 10px; border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color); font-weight: 500;
+    }
+    .header-user-chip {
+        display: flex; align-items: center; gap: 8px;
+        padding: 5px 12px 5px 6px; border-radius: 24px;
+        background: var(--bg-hover); border: 1px solid var(--border-color);
+        cursor: pointer; transition: background 0.12s;
+    }
+    .header-user-chip:hover { background: var(--bg-active); }
+    .header-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--navy-mid), var(--navy-dark));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; color: #fff;
+        flex-shrink: 0;
+    }
+    .header-user-name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+    .header-divider { width: 1px; height: 24px; background: var(--border-color); }
+    .header-icon-btn {
+        width: 34px; height: 34px; border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-secondary); border: 1px solid transparent;
+        transition: all 0.12s ease; cursor: pointer;
+    }
+    .header-icon-btn:hover { background: var(--bg-hover); border-color: var(--border-color); color: var(--navy-dark); }
+
+    /* ── App main ── */
     .app-main {
-        padding: 24px 32px; max-width: 1400px; width: 100%; margin: 0 auto;
-        padding-bottom: 40px; /* No bottom bar on desktop */
+        padding: 28px 36px; max-width: 1440px; width: 100%; margin: 0 auto;
+        padding-bottom: 48px;
     }
 
-    /* Desktop Dashboard */
-    .desktop-dashboard { display: block; margin-bottom: 24px; }
+    /* ── Desktop Dashboard ── */
+    .desktop-dashboard { display: block; margin-bottom: 28px; }
+    .dashboard-section-title {
+        font-size: 11px; font-weight: 700; color: var(--text-secondary);
+        text-transform: uppercase; letter-spacing: 0.8px;
+        margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .dashboard-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+
     .analytics-grid { grid-template-columns: 2fr 1fr; }
     .chart-card.full-width { grid-column: 1 / -1; }
-    
-    /* Desktop New Bill Layout */
+
+    /* ── Desktop New Bill ── */
     #page-new-bill.active {
         display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start;
     }
@@ -91,18 +180,24 @@ DESKTOP ENTERPRISE SHELL (>= 1024px)
     #page-new-bill > .card:nth-child(2), #page-new-bill > .card:nth-child(3) { grid-column: 1; }
     #page-new-bill > .totals-card, #page-new-bill > .card:last-child {
         grid-column: 2; grid-row: 2 / span 3;
-        position: sticky; top: 80px;
+        position: sticky; top: 76px;
     }
     #page-new-bill > .card:last-child { margin-top: 16px; }
 
-    /* Desktop Saved Bills Layout */
+    /* ── Desktop Saved Bills ── */
     #page-saved-bills.active { display: block; }
-    
-    /* Desktop Products Layout */
+
+    /* ── Desktop Products ── */
     #page-products.active { display: block; }
-    .product-row { padding: 12px 16px; }
+    .product-row { padding: 14px 20px; }
+    .product-row:hover { border-color: var(--navy-muted); }
+
+    /* ── Modals on desktop ── */
+    .modal-overlay { align-items: center; }
+    .modal { border-radius: var(--radius-lg); max-height: 84vh; max-width: 600px; }
 }
 
+/* ── Wide screens ── */
 @media (min-width: 1440px) {
     .app-main { max-width: 1500px; }
     .analytics-grid { grid-template-columns: 1.5fr 1fr; }
