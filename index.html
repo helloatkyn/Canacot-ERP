@@ -13,47 +13,50 @@
     <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
 
     <style>
-        /* ── Mobile-only fixes ── */
-        @media (max-width: 767px) {
-            .app-brand { display: none !important; }
+        /* ── Action bar — ID se target, viewport/desktop-site-mode se independent ── */
+        #mobile-action-bar {
+            display: flex !important;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--navy-dark);
+            gap: 10px;
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+            align-items: stretch;
+            z-index: 200;
+            box-shadow: 0 -4px 16px rgba(17,45,96,0.18);
+        }
+        #mobile-action-bar .btn {
+            flex: 1;
+            padding: 13px 6px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            min-width: 0;
+            white-space: nowrap;
+        }
+        #mobile-action-bar .btn-outline {
+            background: rgba(255,255,255,0.10);
+            border: 1.5px solid rgba(255,255,255,0.30);
+            color: #ffffff;
+        }
+        #mobile-action-bar .btn-outline:active { background: rgba(255,255,255,0.20); }
+        #mobile-action-bar .btn-primary {
+            background: #ffffff;
+            color: var(--navy-dark);
+            border: none;
+            box-shadow: none;
+            font-weight: 700;
+        }
+        #mobile-action-bar .btn-primary:active { background: #e8f0fe; }
 
-            .action-bar {
-                display: flex !important;
-                gap: 10px;
-                padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-                background: var(--navy-dark);
-                align-items: stretch;
-            }
-            .action-bar .btn {
-                flex: 1;
-                padding: 13px 6px;
-                font-size: 14px;
-                font-weight: 600;
-                border-radius: 10px;
-                min-width: 0;
-                white-space: nowrap;
-                letter-spacing: 0.1px;
-            }
-            .action-bar .btn-outline {
-                background: rgba(255,255,255,0.10);
-                border: 1.5px solid rgba(255,255,255,0.30);
-                color: #ffffff;
-            }
-            .action-bar .btn-outline:active { background: rgba(255,255,255,0.20); }
-            .action-bar .btn-primary {
-                background: #ffffff;
-                color: var(--navy-dark);
-                border: none;
-                box-shadow: none;
-                font-weight: 700;
-            }
-            .action-bar .btn-primary:active { background: #e8f0fe; }
+        /* Desktop >= 1024px — action bar hide, desktop UI leta hai */
+        @media (min-width: 1024px) {
+            #mobile-action-bar { display: none !important; }
         }
 
-        /* ── Landscape fix ── */
+        /* Landscape phone — 3 buttons row 1, Save full width row 2 */
         @media (orientation: landscape) and (max-height: 500px) {
-            /* 3 outline buttons row 1, Save full width row 2 */
-            .action-bar {
+            #mobile-action-bar {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr 1fr;
                 grid-template-rows: auto auto;
@@ -63,15 +66,12 @@
                          calc(6px + env(safe-area-inset-bottom, 0px))
                          max(16px, env(safe-area-inset-left, 0px));
             }
-            .action-bar .btn {
-                flex: unset;
+            #mobile-action-bar .btn {
                 padding: 9px 4px;
                 font-size: 12px;
                 border-radius: 8px;
-                min-width: 0;
             }
-            /* Save button — full width second row */
-            .action-bar .btn-primary {
+            #mobile-action-bar .btn-primary {
                 grid-column: 1 / -1;
                 padding: 9px;
                 font-size: 13px;
