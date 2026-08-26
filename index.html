@@ -79,6 +79,51 @@
             .app-main { padding-bottom: 100px; }
         }
     </style>
+
+    <style>
+        /* ── KPI Icon overrides — cleaner SVG icons inline via JS hook ── */
+        .kpi-icon svg { width: 20px; height: 20px; }
+
+        /* Sidebar brand center override */
+        .sidebar-brand { display: flex; align-items: center; justify-content: center; }
+
+        /* Sidebar active indicator — left bar */
+        .sidebar-btn { position: relative; }
+        .sidebar-btn.active::before {
+            content: '';
+            position: absolute;
+            left: -10px; top: 18%; bottom: 18%;
+            width: 3px; border-radius: 0 3px 3px 0;
+            background: #60a5fa;
+        }
+    </style>
+    <script>
+        // After lucide creates icons, replace KPI icons with better ones
+        document.addEventListener('DOMContentLoaded', function() {
+            // Override KPI icons after JS renders them
+            const kpiIcons = {
+                'total-sales':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+                'total-bills':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+                'avg-bill':       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+                'top-product':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+            };
+            // KPI row re-renders via JS — observe and update icons
+            const observer = new MutationObserver(function() {
+                const icons = document.querySelectorAll('.kpi-icon');
+                const keys = Object.keys(kpiIcons);
+                icons.forEach(function(el, i) {
+                    if (keys[i] && el.innerHTML.trim() === '') return;
+                    if (keys[i]) {
+                        el.innerHTML = kpiIcons[keys[i]];
+                        const svg = el.querySelector('svg');
+                        if (svg) { svg.style.width = '20px'; svg.style.height = '20px'; }
+                    }
+                });
+            });
+            const kpiRow = document.getElementById('kpi-row');
+            if (kpiRow) observer.observe(kpiRow, { childList: true, subtree: true });
+        });
+    </script>
 </head>
 <body>
 
@@ -104,22 +149,33 @@
 
     <!-- DESKTOP SIDEBAR -->
     <aside class="desktop-sidebar" id="desktop-sidebar">
-        <div class="sidebar-brand">
-            <div class="sidebar-brand-icon">C</div>
-            <div class="sidebar-brand-text">
-                Canacot <span>ERP</span>
-                <small>Billing Suite</small>
-            </div>
+        <div class="sidebar-brand" style="justify-content:center; padding:24px 20px 20px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:8px;">
+            <svg width="42" height="42" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Infinity symbol — clean geometric -->
+                <path d="M50 50 C50 50 35 28 20 28 C9 28 2 36 2 50 C2 64 9 72 20 72 C35 72 50 50 50 50 Z" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <path d="M50 50 C50 50 65 28 80 28 C91 28 98 36 98 50 C98 64 91 72 80 72 C65 72 50 50 50 50 Z" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/>
+            </svg>
         </div>
         <nav class="sidebar-nav">
-            <button class="sidebar-btn active" data-tab="new-bill" data-lucide="file-plus">New Bill</button>
-            <button class="sidebar-btn" data-tab="saved-bills" data-lucide="archive">Saved Bills</button>
-            <button class="sidebar-btn" data-tab="products" data-lucide="package">Products</button>
-            <button class="sidebar-btn" data-tab="analytics" data-lucide="bar-chart-3">Analytics</button>
+            <button class="sidebar-btn active" data-tab="new-bill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                New Bill
+            </button>
+            <button class="sidebar-btn" data-tab="saved-bills">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                Saved Bills
+            </button>
+            <button class="sidebar-btn" data-tab="products">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Products
+            </button>
+            <button class="sidebar-btn" data-tab="analytics">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Analytics
+            </button>
         </nav>
-        <div class="sidebar-footer">
-            <div class="sidebar-footer-dot"></div>
-            v1.0.0 · Canacot ERP
+        <div class="sidebar-footer" style="justify-content:center; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.22);">
+            v1.0.0
         </div>
     </aside>
 
