@@ -307,6 +307,18 @@
                     </div>
                 </div>
 
+                <!-- MOBILE BILLING CHART — desktop par hidden -->
+                <div class="card mobile-chart-only">
+                    <div class="card-header">
+                        <h3 class="card-title">Billing Overview</h3>
+                        <span class="chart-badge" id="bills-total-badge">—</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="bills-chart"></canvas>
+                    </div>
+                    <div class="chart-empty-msg" id="bills-chart-empty">Save bills to see trends</div>
+                </div>
+
                 <div class="search-container">
 
                     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -352,6 +364,18 @@
                         </svg>
                         Add Product
                     </button>
+                </div>
+
+                <!-- MOBILE PRODUCTS CHART — desktop par hidden -->
+                <div class="card mobile-chart-only">
+                    <div class="card-header">
+                        <h3 class="card-title">Price Catalogue</h3>
+                        <span class="chart-badge" id="products-count-badge">—</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="products-chart"></canvas>
+                    </div>
+                    <div class="chart-empty-msg" id="products-chart-empty">Add products to see chart</div>
                 </div>
 
                 <div id="products-list"></div>
@@ -409,4 +433,4 @@
     </script>
 
 </body>
-        </html>
+</html>
