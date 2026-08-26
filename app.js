@@ -36,7 +36,7 @@ const state = {
 // ==========================================
 const DOM = {};
 function cacheDOMRefs() {
-  DOM.tabs = document.querySelectorAll('.tab-btn');
+  DOM.tabs = document.querySelectorAll('.segment-btn');
   DOM.pages = document.querySelectorAll('.page');
   DOM.actionBar = document.getElementById('action-bar');
   
@@ -459,7 +459,6 @@ function updateItemFromRow(row) {
   state.currentBill.items[index].price = Math.max(0, price);
   state.currentBill.items[index].total = calculateRowTotal(qty, price);
   
-  // Update total display without full re-render
   const totalRow = row.nextElementSibling;
   if (totalRow && totalRow.classList.contains('item-row')) {
     totalRow.querySelector('.item-total').textContent = `Total: ${formatCurrency(state.currentBill.items[index].total)}`;
@@ -896,11 +895,11 @@ function performSwitch(tabName) {
 function initEvents() {
   // Tab Navigation
   document.getElementById('tab-nav').addEventListener('click', (e) => {
-    const btn = e.target.closest('.tab-btn');
+    const btn = e.target.closest('.segment-btn');
     if (btn) switchTab(btn.dataset.tab);
   });
   
-  // New Bill Inputs (Debounced state sync)
+  // New Bill Inputs
   DOM.custName.addEventListener('input', () => state.currentBill.customer.name = DOM.custName.value);
   DOM.custMobile.addEventListener('input', () => state.currentBill.customer.mobile = DOM.custMobile.value);
   DOM.custAddress.addEventListener('input', () => state.currentBill.customer.address = DOM.custAddress.value);
