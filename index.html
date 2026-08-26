@@ -3,766 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
     <meta name="theme-color" content="#112d60">
     <meta name="msapplication-navbutton-color" content="#112d60">
     <meta name="apple-mobile-web-app-status-bar-style" content="#112d60">
-
     <title>Canacot ERP</title>
-
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/responsive.css">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
 
     <style>
-        /* =========================================================
-           MOBILE ACTION BAR
-           ========================================================= */
-
+        /* ── Action bar — ID se target, viewport/desktop-site-mode se independent ── */
         #mobile-action-bar {
             display: flex !important;
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-
+            bottom: 0; left: 0; right: 0;
             background: var(--navy-dark);
-
             gap: 10px;
-
-            padding:
-                12px
-                16px
-                calc(12px + env(safe-area-inset-bottom, 0px));
-
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
             align-items: stretch;
-
             z-index: 200;
-
-            box-shadow:
-                0 -4px 16px rgba(17,45,96,0.18);
+            box-shadow: 0 -4px 16px rgba(17,45,96,0.18);
         }
-
         #mobile-action-bar .btn {
             flex: 1;
-
             padding: 13px 6px;
-
             font-size: 14px;
             font-weight: 600;
-
             border-radius: 10px;
-
             min-width: 0;
-
             white-space: nowrap;
         }
-
         #mobile-action-bar .btn-outline {
             background: rgba(255,255,255,0.10);
-
             border: 1.5px solid rgba(255,255,255,0.30);
-
             color: #ffffff;
         }
-
-        #mobile-action-bar .btn-outline:active {
-            background: rgba(255,255,255,0.20);
-        }
-
+        #mobile-action-bar .btn-outline:active { background: rgba(255,255,255,0.20); }
         #mobile-action-bar .btn-primary {
             background: #ffffff;
-
             color: var(--navy-dark);
-
             border: none;
-
             box-shadow: none;
-
             font-weight: 700;
         }
+        #mobile-action-bar .btn-primary:active { background: #e8f0fe; }
 
-        #mobile-action-bar .btn-primary:active {
-            background: #e8f0fe;
-        }
-
-
-        /* =========================================================
-           DESKTOP
-           ========================================================= */
-
+        /* Desktop >= 1024px — action bar hide, desktop UI leta hai */
         @media (min-width: 1024px) {
-            #mobile-action-bar {
-                display: none !important;
-            }
+            #mobile-action-bar { display: none !important; }
         }
 
-
-        /* =========================================================
-           LANDSCAPE PHONE
-           ========================================================= */
-
+        /* Landscape phone — 3 buttons row 1, Save full width row 2 */
         @media (orientation: landscape) and (max-height: 500px) {
-
             #mobile-action-bar {
                 display: grid !important;
-
-                grid-template-columns:
-                    1fr
-                    1fr
-                    1fr;
-
-                grid-template-rows:
-                    auto
-                    auto;
-
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: auto auto;
                 gap: 6px;
-
-                padding:
-                    6px
-                    max(16px, env(safe-area-inset-right, 0px))
-                    calc(6px + env(safe-area-inset-bottom, 0px))
-                    max(16px, env(safe-area-inset-left, 0px));
+                padding: 6px
+                         max(16px, env(safe-area-inset-right, 0px))
+                         calc(6px + env(safe-area-inset-bottom, 0px))
+                         max(16px, env(safe-area-inset-left, 0px));
             }
-
             #mobile-action-bar .btn {
                 padding: 9px 4px;
-
                 font-size: 12px;
-
                 border-radius: 8px;
             }
-
             #mobile-action-bar .btn-primary {
                 grid-column: 1 / -1;
-
                 padding: 9px;
-
                 font-size: 13px;
             }
-
-            .app-main {
-                padding-bottom: 100px;
-            }
-        }
-
-
-        /* =========================================================
-           KPI ICONS
-           ========================================================= */
-
-        .kpi-icon svg {
-            width: 20px;
-            height: 20px;
-        }
-
-
-        /* =========================================================
-           SIDEBAR BRAND
-           ========================================================= */
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-
-        /* =========================================================
-           SIDEBAR ACTIVE INDICATOR
-           ========================================================= */
-
-        .sidebar-btn {
-            position: relative;
-        }
-
-        .sidebar-btn.active::before {
-            content: '';
-
-            position: absolute;
-
-            left: -10px;
-            top: 18%;
-            bottom: 18%;
-
-            width: 3px;
-
-            border-radius: 0 3px 3px 0;
-
-            background: #60a5fa;
+            .app-main { padding-bottom: 100px; }
         }
     </style>
-
-    <script>
-        /*
-        ============================================================
-        KPI ICON OVERRIDE
-        ============================================================
-
-        IMPORTANT:
-
-        Do NOT use MutationObserver here.
-
-        Previous implementation:
-            MutationObserver
-                -> innerHTML change
-                -> mutation
-                -> observer
-                -> innerHTML change
-                -> mutation
-                -> infinite loop
-
-        This implementation does NOT observe DOM mutations.
-
-        Instead:
-            - wait until DOM is ready
-            - try once
-            - if KPI row is not populated yet, use a very small
-              one-time delayed retry
-            - NEVER observe subtree
-            - NEVER create an infinite mutation loop
-        ============================================================
-        */
-
-        (function () {
-
-            const kpiIcons = {
-                'total-sales':
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-                        '<line x1="12" y1="1" x2="12" y2="23"/>' +
-                        '<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' +
-                    '</svg>',
-
-                'total-bills':
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-                        '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
-                        '<polyline points="14 2 14 8 20 8"/>' +
-                        '<line x1="16" y1="13" x2="8" y2="13"/>' +
-                        '<line x1="16" y1="17" x2="8" y2="17"/>' +
-                    '</svg>',
-
-                'avg-bill':
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-                        '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' +
-                    '</svg>',
-
-                'top-product':
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-                        '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' +
-                    '</svg>'
-            };
-
-
-            function applyKpiIcons() {
-
-                const kpiRow =
-                    document.getElementById('kpi-row');
-
-                if (!kpiRow) {
-                    return;
-                }
-
-
-                const icons =
-                    kpiRow.querySelectorAll('.kpi-icon');
-
-
-                if (!icons.length) {
-                    return;
-                }
-
-
-                const keys =
-                    Object.keys(kpiIcons);
-
-
-                icons.forEach(function (element, index) {
-
-                    const key = keys[index];
-
-                    if (!key) {
-                        return;
-                    }
-
-
-                    /*
-                    Only update when necessary.
-
-                    This prevents unnecessary DOM writes and
-                    completely avoids a mutation cycle.
-                    */
-
-                    if (element.dataset.kpiIconApplied === key) {
-                        return;
-                    }
-
-
-                    element.innerHTML =
-                        kpiIcons[key];
-
-
-                    const svg =
-                        element.querySelector('svg');
-
-
-                    if (svg) {
-                        svg.style.width = '20px';
-                        svg.style.height = '20px';
-                    }
-
-
-                    element.dataset.kpiIconApplied = key;
-                });
-            }
-
-
-            document.addEventListener(
-                'DOMContentLoaded',
-                function () {
-
-                    /*
-                    First attempt.
-                    */
-
-                    applyKpiIcons();
-
-
-                    /*
-                    billing.js may populate KPI cards after
-                    DOMContentLoaded.
-
-                    Give it a few safe opportunities.
-
-                    No MutationObserver.
-                    No recursive callback.
-                    No infinite loop.
-                    */
-
-                    setTimeout(applyKpiIcons, 50);
-                    setTimeout(applyKpiIcons, 150);
-                    setTimeout(applyKpiIcons, 300);
-                    setTimeout(applyKpiIcons, 600);
-                }
-            );
-
-        })();
-    </script>
 </head>
-
-
 <body>
 
-
-    <!-- =========================================================
-         MOBILE HEADER
-         ========================================================= -->
-
+    <!-- MOBILE HEADER -->
     <header class="app-header" id="mobile-header">
-
         <div class="header-inner">
-
             <nav class="segmented-nav" id="tab-nav">
-
-                <button
-                    class="segment-btn active"
-                    data-tab="new-bill">
-
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-
-                        <polyline points="14 2 14 8 20 8"></polyline>
-
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-
-                        <polyline points="10 9 9 9 8 9"></polyline>
-
-                    </svg>
-
+                <button class="segment-btn active" data-tab="new-bill">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     <span>New Bill</span>
-
                 </button>
-
-
-                <button
-                    class="segment-btn"
-                    data-tab="saved-bills">
-
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-
-                        <polyline points="7 10 12 15 17 10"></polyline>
-
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-
-                    </svg>
-
+                <button class="segment-btn" data-tab="saved-bills">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     <span>Saved</span>
-
                 </button>
-
-
-                <button
-                    class="segment-btn"
-                    data-tab="products">
-
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-
-                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-
-                    </svg>
-
+                <button class="segment-btn" data-tab="products">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                     <span>Products</span>
-
                 </button>
-
             </nav>
-
         </div>
-
     </header>
 
-
-
-    <!-- =========================================================
-         DESKTOP SIDEBAR
-         ========================================================= -->
-
-    <aside
-        class="desktop-sidebar"
-        id="desktop-sidebar">
-
-
-        <div
-            class="sidebar-brand"
-            style="
-                justify-content:center;
-                padding:24px 20px 20px;
-                border-bottom:1px solid rgba(255,255,255,0.08);
-                margin-bottom:8px;
-            ">
-
-            <svg
-                width="42"
-                height="42"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-
-                <path
-                    d="M50 50 C50 50 35 28 20 28 C9 28 2 36 2 50 C2 64 9 72 20 72 C35 72 50 50 50 50 Z"
-                    stroke="white"
-                    stroke-width="7"
-                    fill="none"
-                    stroke-linecap="round"/>
-
-                <path
-                    d="M50 50 C50 50 65 28 80 28 C91 28 98 36 98 50 C98 64 91 72 80 72 C65 72 50 50 50 50 Z"
-                    stroke="white"
-                    stroke-width="7"
-                    fill="none"
-                    stroke-linecap="round"/>
-
-            </svg>
-
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="desktop-sidebar" id="desktop-sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">C</div>
+            <div class="sidebar-brand-text">
+                Canacot <span>ERP</span>
+                <small>Billing Suite</small>
+            </div>
         </div>
-
-
         <nav class="sidebar-nav">
-
-
-            <button
-                class="sidebar-btn active"
-                data-tab="new-bill">
-
-                <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-
-                    <polyline points="14 2 14 8 20 8"/>
-
-                    <line x1="12" y1="18" x2="12" y2="12"/>
-
-                    <line x1="9" y1="15" x2="15" y2="15"/>
-
-                </svg>
-
-                New Bill
-
-            </button>
-
-
-            <button
-                class="sidebar-btn"
-                data-tab="saved-bills">
-
-                <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-
-                    <line x1="12" y1="11" x2="12" y2="17"/>
-
-                    <line x1="9" y1="14" x2="15" y2="14"/>
-
-                </svg>
-
-                Saved Bills
-
-            </button>
-
-
-            <button
-                class="sidebar-btn"
-                data-tab="products">
-
-                <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-
-                    <rect
-                        x="2"
-                        y="3"
-                        width="20"
-                        height="14"
-                        rx="2"/>
-
-                    <line x1="8" y1="21" x2="16" y2="21"/>
-
-                    <line x1="12" y1="17" x2="12" y2="21"/>
-
-                </svg>
-
-                Products
-
-            </button>
-
-
-            <button
-                class="sidebar-btn"
-                data-tab="analytics">
-
-                <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-
-                </svg>
-
-                Analytics
-
-            </button>
-
+            <button class="sidebar-btn active" data-tab="new-bill" data-lucide="file-plus">New Bill</button>
+            <button class="sidebar-btn" data-tab="saved-bills" data-lucide="archive">Saved Bills</button>
+            <button class="sidebar-btn" data-tab="products" data-lucide="package">Products</button>
+            <button class="sidebar-btn" data-tab="analytics" data-lucide="bar-chart-3">Analytics</button>
         </nav>
-
-
-        <div
-            class="sidebar-footer"
-            style="
-                justify-content:center;
-                font-size:10px;
-                letter-spacing:1px;
-                color:rgba(255,255,255,0.22);
-            ">
-
-            v1.0.0
-
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-dot"></div>
+            v1.0.0 · Canacot ERP
         </div>
-
     </aside>
 
-
-
-    <!-- =========================================================
-         DESKTOP MAIN WRAPPER
-         ========================================================= -->
-
     <div class="desktop-main-wrapper">
-
-
-        <header
-            class="desktop-header"
-            id="desktop-header">
-
+        <header class="desktop-header" id="desktop-header">
             <div class="desktop-header-left">
-
-                <h1
-                    class="page-title"
-                    id="desktop-page-title">
-
-                    New Bill
-
-                </h1>
-
+                <h1 class="page-title" id="desktop-page-title">New Bill</h1>
             </div>
-
-
             <div class="desktop-header-right">
-
-                <span
-                    class="header-date"
-                    id="header-date">
-                </span>
-
-
+                <span class="header-date" id="header-date"></span>
                 <div class="header-divider"></div>
-
-
                 <div class="header-user-chip">
-
-                    <div class="header-avatar">
-                        A
-                    </div>
-
-                    <span class="header-user-name">
-                        Admin
-                    </span>
-
+                    <div class="header-avatar">A</div>
+                    <span class="header-user-name">Admin</span>
                 </div>
-
             </div>
-
         </header>
 
+        <main class="app-main" id="app-main">
 
-
-        <!-- =====================================================
-             MAIN
-             ===================================================== -->
-
-        <main
-            class="app-main"
-            id="app-main">
-
-
-            <!-- =================================================
-                 PAGE: NEW BILL
-                 ================================================= -->
-
-            <div
-                class="page active"
-                id="page-new-bill">
-
-
+            <!-- PAGE: NEW BILL -->
+            <div class="page active" id="page-new-bill">
                 <div class="invoice-header card">
-
                     <div>
-
-                        <div class="invoice-label">
-                            Invoice
-                        </div>
-
-                        <div
-                            class="invoice-number"
-                            id="invoice-number">
-
-                            INV-0001
-
-                        </div>
-
+                        <div class="invoice-label">Invoice</div>
+                        <div class="invoice-number" id="invoice-number">INV-0001</div>
                     </div>
-
-
-                    <div
-                        class="item-count"
-                        id="item-count">
-
-                        0 items
-
-                    </div>
-
+                    <div class="item-count" id="item-count">0 items</div>
                 </div>
 
-
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Customer Details</h3></div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="cust-name" class="input" placeholder="Customer name">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="tel" id="cust-mobile" class="input" placeholder="Mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="cust-address" class="input" placeholder="Delivery address"></textarea>
+                    </div>
+                </div>
 
                 <div class="card">
-
                     <div class="card-header">
-
-                        <h3 class="card-title">
-                            Customer Details
-                        </h3>
-
+                        <h3 class="card-title">Items</h3>
+                        <button class="btn btn-secondary" id="btn-add-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Item
+                        </button>
                     </div>
+                    <div id="items-list"></div>
+                </div>
 
+                <div class="card totals-card">
+                    <div class="total-row"><span>Subtotal</span><span id="subtotal">₹0.00</span></div>
+                    <div class="total-row grand-total"><span>Grand Total</span><span id="grand-total">₹0.00</span></div>
+                </div>
 
-                    <div class="form-group">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Notes / Remarks</h3></div>
+                    <textarea id="bill-notes" class="input" placeholder="Optional notes"></textarea>
+                </div>
+            </div>
 
-                        <label>Name</label>
-
-                        <input
-                            type="text"
-                            id="cust-name"
-                            class="input"
-                            placeholder="Customer name">
-
+            <!-- PAGE: SAVED BILLS / ANALYTICS -->
+            <div class="page" id="page-saved-bills">
+                <div class="desktop-dashboard" id="desktop-dashboard">
+                    <div class="kpi-row" id="kpi-row"></div>
+                    <div class="analytics-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Sales Trend</h3>
+                                <div class="range-selector" id="trend-range">
+                                    <button data-range="7">7D</button>
+                                    <button data-range="30" class="active">30D</button>
+                                    <button data-range="90">90D</button>
+                                    <button data-range="0">ALL</button>
+                                </div>
+                            </div>
+                            <div class="chart-container"><canvas id="chart-trend"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header"><h3>Product Sales</h3></div>
+                            <div class="chart-container"><canvas id="chart-doughnut"></canvas></div>
+                        </div>
+                        <div class="chart-card full-width">
+                            <div class="chart-header"><h3>Top Products</h3></div>
+                            <div class="chart-container"><canvas id="chart-bar"></canvas></div>
+                        </div>
                     </div>
+                </div>
 
+                <div class="search-container">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-records" class="input search-input" placeholder="Search bills...">
+                    <button class="clear-search-btn hidden" id="clear-search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="search-meta" id="search-count">0 bills</div>
+                <div id="saved-records-list"></div>
+            </div>
 
-                    <div class="form-group">
+            <!-- PAGE: PRODUCTS -->
+            <div class="page" id="page-products">
+                <div class="card-header" style="background:var(--bg-card); border-radius:var(--radius-md); margin-bottom:14px; padding:14px 18px;">
+                    <h3 class="card-title" style="margin:0;">Product Catalogue</h3>
+                    <button class="btn btn-primary" id="btn-add-product">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Product
+                    </button>
+                </div>
+                <div id="products-list"></div>
+            </div>
 
-                        <label>Mobile</label>
+        </main>
+    </div>
 
-                        <input
-                            type="t
+    <!-- MOBILE ACTION BAR -->
+    <div class="action-bar" id="mobile-action-bar">
+        <button class="btn btn-outline" id="btn-thermal-58">58mm</button>
+        <button class="btn btn-outline" id="btn-thermal-80">80mm</button>
+        <button class="btn btn-outline" id="btn-print-bill">Print</button>
+        <button class="btn btn-primary" id="btn-save-bill">Save</button>
+    </div>
+
+    <!-- AUTOCOMPLETE -->
+    <div id="autocomplete-dropdown" class="autocomplete-dropdown hidden"></div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay hidden" id="modal-overlay">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <!-- TOASTS -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/billing.js"></script>
+</body>
+            </html>
