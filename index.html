@@ -52,12 +52,31 @@
 
         /* ── Landscape fix ── */
         @media (orientation: landscape) and (max-height: 500px) {
+            /* 3 outline buttons row 1, Save full width row 2 */
             .action-bar {
-                padding: 6px max(16px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: auto auto;
                 gap: 6px;
+                padding: 6px
+                         max(16px, env(safe-area-inset-right, 0px))
+                         calc(6px + env(safe-area-inset-bottom, 0px))
+                         max(16px, env(safe-area-inset-left, 0px));
             }
-            .action-bar .btn { padding: 8px 6px; font-size: 12.5px; border-radius: 8px; }
-            .app-main { padding-bottom: 72px; }
+            .action-bar .btn {
+                flex: unset;
+                padding: 9px 4px;
+                font-size: 12px;
+                border-radius: 8px;
+                min-width: 0;
+            }
+            /* Save button — full width second row */
+            .action-bar .btn-primary {
+                grid-column: 1 / -1;
+                padding: 9px;
+                font-size: 13px;
+            }
+            .app-main { padding-bottom: 100px; }
         }
     </style>
 </head>
