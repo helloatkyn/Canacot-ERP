@@ -147,11 +147,7 @@
     <!-- DESKTOP SIDEBAR -->
     <aside class="desktop-sidebar" id="desktop-sidebar">
         <div class="sidebar-brand">
-            <div class="sidebar-brand-icon">C</div>
-            <div class="sidebar-brand-text">
-                Canacot <span>ERP</span>
-                <small>Billing Suite</small>
-            </div>
+            <img src="logo.png" alt="Canacot ERP" class="sidebar-logo">
         </div>
 
         <nav class="sidebar-nav">
@@ -176,11 +172,13 @@
 
             <div class="desktop-header-right">
                 <span class="header-date" id="header-date"></span>
-                <div class="header-divider"></div>
 
-                <div class="header-user-chip">
-                    <div class="header-avatar">A</div>
-                    <span class="header-user-name">Admin</span>
+                <!-- Desktop action buttons — JS se show/hide hote hain per tab -->
+                <div class="desktop-bill-actions hidden" id="desktop-bill-actions">
+                    <button class="btn btn-outline btn-sm" id="desktop-btn-thermal-58">58mm</button>
+                    <button class="btn btn-outline btn-sm" id="desktop-btn-thermal-80">80mm</button>
+                    <button class="btn btn-outline btn-sm" id="desktop-btn-print">Print</button>
+                    <button class="btn btn-primary btn-sm" id="desktop-btn-save">Save Bill</button>
                 </div>
             </div>
         </header>
